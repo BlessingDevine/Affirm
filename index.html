@@ -637,6 +637,8 @@
             100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
         }
         
+
+        
         /* Mobile responsive */
         @media (max-width: 430px) {
             .logo { font-size: 2.4em; }
@@ -850,14 +852,6 @@
                     <span class="setting-label">Night Mode</span>
                     <div class="toggle-switch" id="nightModeToggle"></div>
                 </div>
-            </div>
-            
-            <div class="settings-section">
-                <h3 class="settings-title">Reading</h3>
-                <div class="setting-item">
-                    <span class="setting-label">Auto-advance (minutes)</span>
-                    <input type="range" min="1" max="10" value="5" class="slider" id="readingTimeSlider">
-                </div>
                 <div class="setting-item">
                     <span class="setting-label">Audio</span>
                     <div class="toggle-switch" id="audioToggle"></div>
@@ -937,7 +931,7 @@
         
         <div class="header">
             <h1 class="logo">Serenity</h1>
-            <p class="subtitle">Daily Affirmations & Wisdom</p>
+            <p class="subtitle">Affirmations & Wisdom Quotes</p>
         </div>
         
         <div class="content-area" id="contentArea">
@@ -951,7 +945,7 @@
         </div>
         
         <div class="bottom-area">
-            <div class="swipe-hint">→ Tap for next affirmation</div>
+            <div class="swipe-hint">Next affirmation</div>
         </div>
     </div>
 
@@ -1048,7 +1042,37 @@
             "Christopher Columbus followed a hunch.",
             "When in doubt play trumps, do the fearless thing.",
             "Before you call you are answered, for the supply precedes the demand.",
-            "Fear and impatience demagnetize. Poise magnetizes."
+            "Fear and impatience demagnetize. Poise magnetizes.",
+            "Intuition is a spiritual faculty and does not explain, but simply points the way.",
+            "A man can receive nothing unless it is given to him from heaven.",
+            "Every great work, every big accomplishment, has been brought into manifestation through holding to the vision.",
+            "The game of life is a game of boomerangs. Our thoughts, deeds and words return to us sooner or later with astounding accuracy.",
+            "No man is your enemy, no man is your friend, every man is your teacher.",
+            "What man condemns in others, he attracts to himself.",
+            "The subconscious mind has no sense of humor and people often joke themselves into unhappy experiences.",
+            "You will be a failure, until you impress the subconscious with the conviction you are a success.",
+            "The Chinese say that water wears away the hardest stone, and patience and persistence will overcome the greatest difficulties.",
+            "Asking nothing, receiving everything.",
+            "God does not know failure.",
+            "Infinite Spirit, open the way for the Divine Design of my life to manifest; let the genius within me now be released; let me see clearly the perfect plan.",
+            "The imaging faculty is the creative faculty.",
+            "Words and thoughts are a tremendous vibratory force, ever moulding man's body and affairs.",
+            "Man's word is his wand filled with magic and power!",
+            "Jesus Christ said 'And ye shall know the truth and the truth shall make you free.'",
+            "So man must be careful to decree that only the Divine Idea be made manifest, for often, he decrees, through his imaging faculty, his own limitation.",
+            "Continually 'making-believe' impresses the subconscious mind with the conviction that the thing desired is already accomplished.",
+            "Acting 'as if' were a magic wand which dissolves failure and brings success.",
+            "The subconscious mind is the faithful servant but a poor master.",
+            "Many a man is building a cage with his own thoughts.",
+            "Change your expectancies and you change your conditions.",
+            "Bless your enemy, and you rob him of his ammunition.",
+            "The Christ within is man's own fourth dimensional self.",
+            "Jesus Christ taught that it was done unto man, as he believed.",
+            "Man can only receive what he sees himself receiving.",
+            "The imaging faculty is man's own way to the Truth.",
+            "Resentment, condemnation and hate, are the causes of disease and disaster.",
+            "Love and good-will are invaluable in business. For example: A woman came to me, complaining that she was about to lose her position.",
+            "There is always plenty on man's pathway, but it can only be brought into manifestation through desire, faith or the spoken word."
         ];
 
         const backgrounds = ['bg-peaceful', 'bg-calm', 'bg-tranquil', 'bg-gentle'];
@@ -1059,14 +1083,26 @@
         let filteredAffirmations = affirmations;
         let personalAffirmations = [];
         let readingHistory = [];
+        let autoAdvanceTimer = null;
         
         let settings = {
             nightMode: false,
             audioEnabled: false,
-            readingTime: 5,
             selectedCategory: 'all',
             favoritesOnly: false
         };
+        
+        // Auto-advance functionality
+        function startAutoAdvance() {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = setTimeout(() => {
+                displayAffirmation();
+            }, 120000); // 2 minutes = 120,000 milliseconds
+        }
+        
+        function resetAutoAdvance() {
+            startAutoAdvance();
+        }
         
         // Load data
         function loadSettings() {
@@ -1076,9 +1112,6 @@
             const savedPersonal = localStorage.getItem('serenityPersonalAffirmations');
             if (savedPersonal) personalAffirmations = JSON.parse(savedPersonal);
             
-            const savedHistory = localStorage.getItem('serenityReadingHistory');
-            if (savedHistory) readingHistory = JSON.parse(savedHistory);
-            
             applySettings();
         }
         
@@ -1086,45 +1119,10 @@
             localStorage.setItem('serenitySettings', JSON.stringify(settings));
         }
         
-        function savePersonalAffirmations() {
-            localStorage.setItem('serenityPersonalAffirmations', JSON.stringify(personalAffirmations));
-        }
-        
-        function saveReadingHistory() {
-            localStorage.setItem('serenityReadingHistory', JSON.stringify(readingHistory));
-        }
-        
-        // History tracking
-        function addToHistory(affirmation) {
-            readingHistory.unshift({ text: affirmation.text, timestamp: Date.now() });
-            if (readingHistory.length > 20) readingHistory = readingHistory.slice(0, 20);
-            saveReadingHistory();
-        }
-        
-        function wasRecentlyShown(affirmation) {
-            const recent = readingHistory.slice(0, 5);
-            return recent.some(item => item.text === affirmation.text);
-        }
-        
         // Apply settings
         function applySettings() {
-            const wasNightMode = document.body.classList.contains('night-mode');
-            
             document.body.classList.toggle('night-mode', settings.nightMode);
             document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
-            document.getElementById('readingTimeSlider').value = settings.readingTime;
-            document.getElementById('audioToggle').classList.toggle('active', settings.audioEnabled);
-            document.getElementById('favoritesOnlyToggle').classList.toggle('active', settings.favoritesOnly);
-            
-            // Handle background change when toggling modes
-            if (wasNightMode !== settings.nightMode) {
-                if (settings.nightMode) {
-                    applyNightModeBackground();
-                } else {
-                    resetToDefaultBackground();
-                }
-            }
-            
             updateFilteredAffirmations();
         }
         
@@ -1164,9 +1162,7 @@
         
         // Categories
         function getCategories() {
-            const original = [...new Set(affirmations.map(a => a.category))].sort();
-            const personal = [...new Set(personalAffirmations.map(a => a.category))].sort();
-            return [...new Set([...original, ...personal])].sort();
+            return [...new Set(affirmations.map(a => a.category))].sort();
         }
         
         function updateFilteredAffirmations() {
@@ -1189,34 +1185,12 @@
             const container = document.getElementById('categoryFilter');
             const categories = getCategories();
             
-            const allTag = container.querySelector('[data-category="all"]');
-            container.innerHTML = '';
-            container.appendChild(allTag);
-            
             categories.forEach(category => {
                 const tag = document.createElement('div');
                 tag.className = 'category-tag';
                 tag.dataset.category = category;
                 tag.textContent = category;
-                tag.addEventListener('click', () => selectCategory(category));
                 container.appendChild(tag);
-            });
-            
-            updateCategoryFilter();
-        }
-        
-        function selectCategory(category) {
-            settings.selectedCategory = category;
-            saveSettings();
-            updateCategoryFilter();
-            updateFilteredAffirmations();
-            displayAffirmation();
-        }
-        
-        function updateCategoryFilter() {
-            const tags = document.querySelectorAll('.category-tag');
-            tags.forEach(tag => {
-                tag.classList.toggle('active', tag.dataset.category === settings.selectedCategory);
             });
         }
         
@@ -1227,40 +1201,6 @@
             const isOpen = panel.classList.contains('open');
             panel.classList.toggle('open', !isOpen);
             overlay.classList.toggle('open', !isOpen);
-        }
-        
-        // Personal affirmations
-        function openAddPersonalModal() {
-            document.getElementById('addPersonalOverlay').classList.add('open');
-            document.getElementById('personalText').focus();
-        }
-        
-        function closeAddPersonalModal() {
-            document.getElementById('addPersonalOverlay').classList.remove('open');
-            document.getElementById('personalText').value = '';
-            document.getElementById('personalCategory').value = 'Personal';
-        }
-        
-        function savePersonalAffirmation() {
-            const text = document.getElementById('personalText').value.trim();
-            const category = document.getElementById('personalCategory').value;
-            
-            if (!text) {
-                alert('Please enter an affirmation text');
-                return;
-            }
-            
-            personalAffirmations.push({
-                text: text,
-                category: category,
-                isPersonal: true,
-                dateAdded: new Date().toISOString()
-            });
-            
-            savePersonalAffirmations();
-            updateFilteredAffirmations();
-            setupCategoryFilter();
-            closeAddPersonalModal();
         }
         
         // Reflections
@@ -1335,31 +1275,43 @@
             document.getElementById('reflectionsOverlay').classList.remove('open');
         }
         
-        // Audio
-        function speakAffirmation(text) {
-            if (!settings.audioEnabled || !window.speechSynthesis) return;
+        // Personal affirmations
+        function openAddPersonalModal() {
+            document.getElementById('addPersonalOverlay').classList.add('open');
+            document.getElementById('personalText').focus();
+        }
+        
+        function closeAddPersonalModal() {
+            document.getElementById('addPersonalOverlay').classList.remove('open');
+            document.getElementById('personalText').value = '';
+            document.getElementById('personalCategory').value = 'Personal';
+        }
+        
+        function savePersonalAffirmation() {
+            const text = document.getElementById('personalText').value.trim();
+            const category = document.getElementById('personalCategory').value;
             
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.8;
-            utterance.pitch = 1.0;
-            utterance.volume = 0.8;
-            window.speechSynthesis.speak(utterance);
+            if (!text) {
+                alert('Please enter an affirmation text');
+                return;
+            }
+            
+            personalAffirmations.push({
+                text: text,
+                category: category,
+                isPersonal: true,
+                dateAdded: new Date().toISOString()
+            });
+            
+            localStorage.setItem('serenityPersonalAffirmations', JSON.stringify(personalAffirmations));
+            updateFilteredAffirmations();
+            setupCategoryFilter();
+            closeAddPersonalModal();
         }
 
         // Core functions
         function getRandomAffirmation() {
-            if (filteredAffirmations.length === 0) return affirmations[0];
-            
-            let attempts = 0;
-            let affirmation;
-            
-            do {
-                affirmation = filteredAffirmations[Math.floor(Math.random() * filteredAffirmations.length)];
-                attempts++;
-            } while (wasRecentlyShown(affirmation) && attempts < 5);
-            
-            return affirmation;
+            return affirmations[Math.floor(Math.random() * affirmations.length)];
         }
 
         function getNextWisdom() {
@@ -1373,24 +1325,6 @@
             document.body.classList.add(backgrounds[bgIndex]);
             bgIndex = (bgIndex + 1) % backgrounds.length;
         }
-        
-        function applyNightModeBackground() {
-            const nightBackgrounds = [
-                'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%)',
-                'linear-gradient(135deg, #2d1b69 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)',
-                'linear-gradient(135deg, #232526 0%, #414345 40%, #1a1a2e 70%, #232526 100%)',
-                'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)'
-            ];
-            document.body.style.background = nightBackgrounds[bgIndex % nightBackgrounds.length];
-            bgIndex = (bgIndex + 1) % nightBackgrounds.length;
-        }
-        
-        function resetToDefaultBackground() {
-            // Reset to default day mode background
-            document.body.style.background = '';
-            backgrounds.forEach(bg => document.body.classList.remove(bg));
-            document.body.style.background = 'linear-gradient(135deg, #F5F8FA 0%, #E8F4F8 40%, #DFF3F7 70%, #F0F8FF 100%)';
-        }
 
         function displayAffirmation() {
             const affirmation = getRandomAffirmation();
@@ -1401,26 +1335,21 @@
             // Fade out
             content.classList.add('updating');
             
-            // Change background based on mode
-            if (settings.nightMode) {
-                applyNightModeBackground();
-            } else {
+            // Change background
+            if (!settings.nightMode) {
                 changeBackground();
             }
             
             setTimeout(() => {
-                const categoryText = affirmation.isPersonal ? 
-                    affirmation.category + ' ✨' : affirmation.category;
-                
-                category.textContent = categoryText;
+                category.textContent = affirmation.category;
                 content.textContent = affirmation.text;
                 updateFavoriteButton();
                 
                 // Fade in
                 content.classList.remove('updating');
                 
-                addToHistory(affirmation);
-                speakAffirmation(affirmation.text);
+                // Reset auto-advance timer
+                resetAutoAdvance();
             }, 300);
         }
 
@@ -1443,7 +1372,6 @@
             const contentArea = document.getElementById('contentArea');
             
             contentArea.addEventListener('touchstart', (e) => {
-                // Don't trigger on button clicks
                 if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
                     return;
                 }
@@ -1457,7 +1385,6 @@
             }, { passive: true });
             
             contentArea.addEventListener('touchend', (e) => {
-                // Don't trigger on button clicks
                 if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
                     return;
                 }
@@ -1466,7 +1393,6 @@
             }, { passive: true });
 
             contentArea.addEventListener('click', (e) => {
-                // Don't trigger on button clicks
                 if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
                     return;
                 }
@@ -1487,26 +1413,7 @@
             // Settings toggles
             document.getElementById('nightModeToggle').addEventListener('click', () => {
                 settings.nightMode = !settings.nightMode;
-                saveSettings();
                 applySettings();
-            });
-            
-            document.getElementById('audioToggle').addEventListener('click', () => {
-                settings.audioEnabled = !settings.audioEnabled;
-                saveSettings();
-                applySettings();
-            });
-            
-            document.getElementById('readingTimeSlider').addEventListener('input', (e) => {
-                settings.readingTime = parseInt(e.target.value);
-                saveSettings();
-            });
-            
-            document.getElementById('favoritesOnlyToggle').addEventListener('click', () => {
-                settings.favoritesOnly = !settings.favoritesOnly;
-                saveSettings();
-                applySettings();
-                displayAffirmation();
             });
             
             // Personal affirmations
@@ -1529,11 +1436,6 @@
             document.getElementById('reflectionInputOverlay').addEventListener('click', (e) => {
                 if (e.target === e.currentTarget) closeReflectionInputModal();
             });
-            
-            // Category "All" button
-            document.querySelector('[data-category="all"]').addEventListener('click', () => {
-                selectCategory('all');
-            });
         }
 
         // Initialize
@@ -1544,8 +1446,11 @@
             handleTouch();
             setupEventListeners();
             
+            // Start auto-advance timer
+            startAutoAdvance();
+            
             // Show wisdom periodically
-            setInterval(showWisdom, 60000); // Every minute for demo
+            setInterval(showWisdom, 30000); // Every 30 seconds for demo
         });
 
         // Prevent context menu
