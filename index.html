@@ -186,11 +186,13 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 80px 20px 20px 20px;
+            padding: 80px 20px 40px 20px;
             transition: right 0.3s ease;
             box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         
         .settings-panel.open {
@@ -1138,6 +1140,18 @@
             document.body.classList.add(backgrounds[bgIndex]);
             bgIndex = (bgIndex + 1) % backgrounds.length;
         }
+        
+        function changeBackgroundNightMode() {
+            if (!settings.nightMode) return;
+            // Cycle through darker variations for night mode
+            const nightBackgrounds = [
+                'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%)',
+                'linear-gradient(135deg, #2d1b69 0%, #11998e 40%, #38ef7d 70%, #2d1b69 100%)',
+                'linear-gradient(135deg, #232526 0%, #414345 40%, #232526 70%, #414345 100%)',
+                'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 40%, #16213e 70%, #0c0c0c 100%)'
+            ];
+            document.body.style.background = nightBackgrounds[bgIndex % nightBackgrounds.length];
+        }
 
         function displayAffirmation() {
             const affirmation = getRandomAffirmation();
@@ -1147,7 +1161,13 @@
             
             // Fade out
             content.classList.add('updating');
-            changeBackground();
+            
+            // Change background based on mode
+            if (settings.nightMode) {
+                changeBackgroundNightMode();
+            } else {
+                changeBackground();
+            }
             
             setTimeout(() => {
                 const categoryText = affirmation.isPersonal ? 
