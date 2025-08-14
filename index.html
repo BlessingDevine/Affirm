@@ -1224,6 +1224,10 @@
             const contentArea = document.getElementById('contentArea');
             
             contentArea.addEventListener('touchstart', (e) => {
+                // Don't trigger on button clicks
+                if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
+                    return;
+                }
                 touchStartY = e.touches[0].clientY;
                 isScrolling = false;
             }, { passive: true });
@@ -1234,11 +1238,19 @@
             }, { passive: true });
             
             contentArea.addEventListener('touchend', (e) => {
+                // Don't trigger on button clicks
+                if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
+                    return;
+                }
                 if (isScrolling) return;
                 displayAffirmation();
             }, { passive: true });
 
-            contentArea.addEventListener('click', () => {
+            contentArea.addEventListener('click', (e) => {
+                // Don't trigger on button clicks
+                if (e.target.closest('.favorite-btn') || e.target.closest('.reflect-btn')) {
+                    return;
+                }
                 if (!isScrolling) displayAffirmation();
             });
         }
