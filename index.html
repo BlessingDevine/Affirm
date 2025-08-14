@@ -129,9 +129,12 @@
             text-align: center;
             max-height: 50vh;
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
             padding: 0 8px;
             font-style: italic;
+        }
+        
+        .affirmation::-webkit-scrollbar {
+            display: none;
         }
         
         .affirmation.updating {
@@ -886,11 +889,23 @@
         
         // Apply settings
         function applySettings() {
+            const wasNightMode = document.body.classList.contains('night-mode');
+            
             document.body.classList.toggle('night-mode', settings.nightMode);
             document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
             document.getElementById('readingTimeSlider').value = settings.readingTime;
             document.getElementById('audioToggle').classList.toggle('active', settings.audioEnabled);
             document.getElementById('favoritesOnlyToggle').classList.toggle('active', settings.favoritesOnly);
+            
+            // Handle background change when toggling modes
+            if (wasNightMode !== settings.nightMode) {
+                if (settings.nightMode) {
+                    applyNightModeBackground();
+                } else {
+                    resetToDefaultBackground();
+                }
+            }
+            
             updateFilteredAffirmations();
         }
         
@@ -1135,22 +1150,27 @@
         }
 
         function changeBackground() {
-            if (settings.nightMode) return;
             backgrounds.forEach(bg => document.body.classList.remove(bg));
             document.body.classList.add(backgrounds[bgIndex]);
             bgIndex = (bgIndex + 1) % backgrounds.length;
         }
         
-        function changeBackgroundNightMode() {
-            if (!settings.nightMode) return;
-            // Cycle through darker variations for night mode
+        function applyNightModeBackground() {
             const nightBackgrounds = [
                 'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%)',
-                'linear-gradient(135deg, #2d1b69 0%, #11998e 40%, #38ef7d 70%, #2d1b69 100%)',
-                'linear-gradient(135deg, #232526 0%, #414345 40%, #232526 70%, #414345 100%)',
-                'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 40%, #16213e 70%, #0c0c0c 100%)'
+                'linear-gradient(135deg, #2d1b69 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)',
+                'linear-gradient(135deg, #232526 0%, #414345 40%, #1a1a2e 70%, #232526 100%)',
+                'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)'
             ];
             document.body.style.background = nightBackgrounds[bgIndex % nightBackgrounds.length];
+            bgIndex = (bgIndex + 1) % nightBackgrounds.length;
+        }
+        
+        function resetToDefaultBackground() {
+            // Reset to default day mode background
+            document.body.style.background = '';
+            backgrounds.forEach(bg => document.body.classList.remove(bg));
+            document.body.style.background = 'linear-gradient(135deg, #F5F8FA 0%, #E8F4F8 40%, #DFF3F7 70%, #F0F8FF 100%)';
         }
 
         function displayAffirmation() {
@@ -1164,7 +1184,7 @@
             
             // Change background based on mode
             if (settings.nightMode) {
-                changeBackgroundNightMode();
+                applyNightModeBackground();
             } else {
                 changeBackground();
             }
