@@ -177,6 +177,14 @@
             display: inline-block;
             animation: pulseGlow 3s infinite;
             border: 1px solid rgba(107, 143, 163, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .swipe-hint:hover {
+            opacity: 1;
+            transform: scale(1.02);
+            background: rgba(107, 143, 163, 0.12);
         }
         
         /* Settings Panel */
@@ -512,8 +520,6 @@
         
         .night-mode .container {
             background: rgba(30, 30, 50, 0.7);
-            margin: 16px;
-            border-radius: 24px;
         }
         
         .night-mode .logo {
@@ -548,6 +554,10 @@
             color: #7a9cc6;
             background: rgba(122, 156, 198, 0.1);
             border-color: rgba(122, 156, 198, 0.2);
+        }
+        
+        .night-mode .swipe-hint:hover {
+            background: rgba(122, 156, 198, 0.15);
         }
         
         .night-mode .settings-panel {
@@ -945,7 +955,7 @@
         </div>
         
         <div class="bottom-area">
-            <div class="swipe-hint">Next affirmation</div>
+            <div class="swipe-hint" id="nextBtn">Next affirmation</div>
         </div>
     </div>
 
@@ -1091,6 +1101,46 @@
             selectedCategory: 'all',
             favoritesOnly: false
         };
+        
+        function changeBackground() {
+            console.log('changeBackground called, bgIndex =', bgIndex, 'nightMode =', settings.nightMode);
+            // Day mode now uses inline styles to override the default set by resetToDefaultBackground
+            const dayBackgrounds = [
+                'linear-gradient(135deg, #F0F8F0 0%, #E8F5E8 40%, #DFF7DF 70%, #F8FFF8 100%)', // bg-peaceful
+                'linear-gradient(135deg, #F8F5F8 0%, #F0E8F0 40%, #F2DFF2 70%, #FFF8FF 100%)', // bg-calm  
+                'linear-gradient(135deg, #F8F8F0 0%, #F5F5E8 40%, #F7F7DF 70%, #FFFFF8 100%)', // bg-tranquil
+                'linear-gradient(135deg, #F0F5F8 0%, #E8F0F5 40%, #DFF2F7 70%, #F8FDFF 100%)'  // bg-gentle
+            ];
+            
+            const selectedBg = dayBackgrounds[bgIndex % dayBackgrounds.length];
+            console.log('Setting day background:', selectedBg);
+            document.body.style.background = selectedBg;
+            bgIndex = (bgIndex + 1) % dayBackgrounds.length;
+            console.log('changeBackground complete, new bgIndex =', bgIndex);
+        }
+        
+        function applyNightModeBackground() {
+            const nightBackgrounds = [
+                'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%)',
+                'linear-gradient(135deg, #2d1b69 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)',
+                'linear-gradient(135deg, #232526 0%, #414345 40%, #1a1a2e 70%, #232526 100%)',
+                'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%)'
+            ];
+            document.body.style.background = nightBackgrounds[bgIndex % nightBackgrounds.length];
+            bgIndex = (bgIndex + 1) % nightBackgrounds.length;
+        }
+        
+        function resetToDefaultBackground() {
+            // Reset to default day mode background and fix the index
+            document.body.style.background = '';
+            backgrounds.forEach(bg => document.body.classList.remove(bg));
+            
+            // Set the default background and reset index to 0 so changeBackground works properly
+            document.body.style.background = 'linear-gradient(135deg, #F5F8FA 0%, #E8F4F8 40%, #DFF3F7 70%, #F0F8FF 100%)';
+            
+            // Reset bgIndex to 0 so the next changeBackground call works correctly
+            bgIndex = 0;
+        }
         
         // Auto-advance functionality
         function startAutoAdvance() {
@@ -1335,8 +1385,10 @@
             // Fade out
             content.classList.add('updating');
             
-            // Change background
-            if (!settings.nightMode) {
+            // Change background based on mode (original logic)
+            if (settings.nightMode) {
+                applyNightModeBackground();
+            } else {
                 changeBackground();
             }
             
@@ -1406,14 +1458,54 @@
             document.getElementById('settingsBtn').addEventListener('click', toggleSettings);
             document.getElementById('settingsOverlay').addEventListener('click', toggleSettings);
             
+            // Next button
+            document.getElementById('nextBtn').addEventListener('click', displayAffirmation);
+            
             // Main buttons
             document.getElementById('favoriteBtn').addEventListener('click', toggleFavorite);
             document.getElementById('reflectBtn').addEventListener('click', openReflectionModal);
             
             // Settings toggles
             document.getElementById('nightModeToggle').addEventListener('click', () => {
+                console.log('Night mode toggle clicked! Current state:', settings.nightMode);
                 settings.nightMode = !settings.nightMode;
-                applySettings();
+                console.log('New night mode state:', settings.nightMode);
+                saveSettings();
+                
+                // Call applySettings directly inline to test
+                console.log('About to call applySettings directly...');
+                try {
+                    const wasNightMode = document.body.classList.contains('night-mode');
+                    console.log('Direct call: wasNightMode =', wasNightMode, 'settings.nightMode =', settings.nightMode);
+                    
+                    document.body.classList.toggle('night-mode', settings.nightMode);
+                    document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
+                    
+                    console.log('After direct toggle: body has night-mode class =', document.body.classList.contains('night-mode'));
+                    
+                    // Handle background change
+                    if (wasNightMode !== settings.nightMode) {
+                        console.log('DIRECT MODE CHANGE DETECTED!');
+                        if (settings.nightMode) {
+                            console.log('Direct call: applyNightModeBackground');
+                            applyNightModeBackground();
+                        } else {
+                            console.log('Direct call: resetToDefaultBackground');
+                            resetToDefaultBackground();
+                            console.log('resetToDefaultBackground complete, bgIndex now =', bgIndex);
+                            // Force an immediate background change to test
+                            setTimeout(() => {
+                                console.log('Forcing immediate changeBackground after mode switch');
+                                changeBackground();
+                                console.log('Forced changeBackground complete, bgIndex now =', bgIndex);
+                            }, 100);
+                        }
+                    }
+                } catch (error) {
+                    console.error('ERROR in direct call:', error);
+                }
+                
+                console.log('Direct call complete');
             });
             
             // Personal affirmations
