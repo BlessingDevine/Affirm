@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serenity - Affirmations & Wisdom</title>
-    <meta name="description" content="A peaceful app for daily affirmations and wisdom">
-    <meta name="theme-color" content="#4A90B8">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU2VyZW5pdHkgLSBBZmZpcm1hdGlvbnMgJiBXaXNkb20iLCJzaG9ydF9uYW1lIjoiU2VyZW5pdHkiLCJzdGFydF91cmwiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGNUY4RkEiLCJ0aGVtZV9jb2xvciI6IiM0QTkwQjgiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhacFpYZENiM2c5SWpBZ01DQTBPQ0EwT0NJK1BHTnBjbU5zWlNCamVEMGlNalFpSUdONVBTSXlOQ0lpSUhJOUlqRWlJR1pwYkd3OUlpTTBRVGt3UWpnaVBqd3ZZMmx5WTJ4bFBqd3ZjM1puUGc9PSIsInNpemVzIjoiNDh4NDgiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
-    
+    <title>Serenity - Complete Affirmations & Wisdom</title>
     <style>
         * {
             margin: 0;
@@ -172,6 +168,413 @@
             border: 1px solid rgba(107, 143, 163, 0.15);
         }
         
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 80px 20px 20px 20px;
+            transition: right 0.3s ease;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .settings-panel.open {
+            right: 0;
+        }
+        
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .settings-btn {
+            position: fixed;
+            top: env(safe-area-inset-top, 44px);
+            right: 20px;
+            z-index: 1001;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
+        }
+        
+        .settings-section {
+            margin-bottom: 30px;
+        }
+        
+        .settings-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #2C5F7A;
+            margin-bottom: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(74, 144, 184, 0.1);
+        }
+        
+        .setting-label {
+            font-size: 0.95em;
+            color: #4A90B8;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #7FB069;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #7FB069;
+            cursor: pointer;
+        }
+        
+        .category-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .category-tag {
+            padding: 6px 12px;
+            background: rgba(127, 176, 105, 0.1);
+            border: 1px solid rgba(127, 176, 105, 0.3);
+            border-radius: 16px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #7FB069;
+        }
+        
+        .category-tag.active {
+            background: #7FB069;
+            color: white;
+        }
+        
+        .favorite-btn, .reflect-btn {
+            position: absolute;
+            top: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .favorite-btn {
+            right: 20px;
+        }
+        
+        .reflect-btn {
+            right: 70px;
+            font-size: 1.3em;
+        }
+        
+        .favorite-btn:hover, .reflect-btn:hover,
+        .favorite-btn.favorited {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.favorited {
+            color: #e74c3c;
+        }
+        
+        .add-personal-btn, .view-reflections-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(127, 176, 105, 0.1);
+            border: 1px solid rgba(127, 176, 105, 0.3);
+            border-radius: 8px;
+            color: #7FB069;
+            font-family: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .add-personal-btn:hover, .view-reflections-btn:hover {
+            background: rgba(127, 176, 105, 0.2);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .reflections-modal {
+            max-width: 500px;
+        }
+        
+        .modal h3 {
+            color: #2C5F7A;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        
+        .modal textarea, .modal select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+        
+        .modal textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .modal button:first-child {
+            background: #7FB069;
+            color: white;
+        }
+        
+        .modal button:first-child:hover {
+            background: #6a9555;
+        }
+        
+        .modal button:last-child {
+            background: #ddd;
+            color: #666;
+        }
+        
+        .modal button:last-child:hover {
+            background: #ccc;
+        }
+        
+        .reflection-item {
+            border-bottom: 1px solid rgba(74, 144, 184, 0.1);
+            padding: 15px 0;
+        }
+        
+        .reflection-date {
+            font-size: 0.8em;
+            color: #6B8FA3;
+            margin-bottom: 5px;
+        }
+        
+        .reflection-affirmation {
+            font-style: italic;
+            color: #4A90B8;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        
+        .reflection-note {
+            color: #2C3E50;
+        }
+        
+        /* Night Mode */
+        body.night-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%);
+        }
+        
+        .night-mode .container {
+            background: rgba(30, 30, 50, 0.8);
+        }
+        
+        .night-mode .logo {
+            color: #a8c8ec;
+        }
+        
+        .night-mode .subtitle {
+            color: #7a9cc6;
+        }
+        
+        .night-mode .content-type {
+            color: #6bb6ff;
+        }
+        
+        .night-mode .category {
+            color: #9ed686;
+            background: rgba(158, 214, 134, 0.15);
+        }
+        
+        .night-mode .affirmation {
+            color: #e8e8f0;
+        }
+        
+        .night-mode .wisdom {
+            color: #a8c8ec;
+            background: rgba(168, 200, 236, 0.1);
+            border-left-color: #a8c8ec;
+        }
+        
+        .night-mode .swipe-hint {
+            color: #7a9cc6;
+            background: rgba(122, 156, 198, 0.1);
+            border-color: rgba(122, 156, 198, 0.2);
+        }
+        
+        .night-mode .settings-panel {
+            background: rgba(30, 30, 50, 0.95);
+        }
+        
+        .night-mode .settings-btn {
+            background: rgba(30, 30, 50, 0.8);
+            color: #a8c8ec;
+        }
+        
+        .night-mode .settings-title {
+            color: #a8c8ec;
+        }
+        
+        .night-mode .setting-label {
+            color: #7a9cc6;
+        }
+        
+        .night-mode .modal {
+            background: rgba(30, 30, 50, 0.95);
+            color: #e8e8f0;
+        }
+        
+        .night-mode .modal h3 {
+            color: #a8c8ec;
+        }
+        
+        .night-mode .modal textarea, .night-mode .modal select {
+            background: rgba(30, 30, 50, 0.8);
+            border-color: #4a5568;
+            color: #e8e8f0;
+        }
+        
+        .night-mode .reflection-date {
+            color: #7a9cc6;
+        }
+        
+        .night-mode .reflection-affirmation {
+            color: #6bb6ff;
+        }
+        
+        .night-mode .reflection-note {
+            color: #e8e8f0;
+        }
+        
         @keyframes pulseGlow {
             0%, 100% { opacity: 0.7; transform: scale(1); }
             50% { opacity: 0.9; transform: scale(1.02); }
@@ -215,35 +618,17 @@
             100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
         }
         
-        /* Mobile-first responsive design */
+        /* Mobile responsive */
         @media (max-width: 430px) {
-            .logo {
-                font-size: 2.4em;
-            }
-            
-            .affirmation {
-                font-size: 1.2em;
-                line-height: 1.6;
-            }
-            
-            .content-area {
-                padding: 30px 12px;
-            }
+            .logo { font-size: 2.4em; }
+            .affirmation { font-size: 1.2em; line-height: 1.6; }
+            .content-area { padding: 30px 12px; }
         }
         
         @media (max-width: 375px) {
-            .logo {
-                font-size: 2.2em;
-            }
-            
-            .affirmation {
-                font-size: 1.15em;
-            }
-            
-            .header {
-                padding: 15px 0 25px 0;
-                margin-bottom: 25px;
-            }
+            .logo { font-size: 2.2em; }
+            .affirmation { font-size: 1.15em; }
+            .header { padding: 15px 0 25px 0; margin-bottom: 25px; }
         }
         
         @media (min-width: 768px) {
@@ -276,6 +661,97 @@
 </head>
 <body>
     <div class="container">
+        <!-- Settings Button -->
+        <button class="settings-btn" id="settingsBtn">⚙️</button>
+        
+        <!-- Settings Overlay -->
+        <div class="settings-overlay" id="settingsOverlay"></div>
+        
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <div class="settings-section">
+                <h3 class="settings-title">Appearance</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Night Mode</span>
+                    <div class="toggle-switch" id="nightModeToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-title">Reading</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Auto-advance (minutes)</span>
+                    <input type="range" min="1" max="10" value="5" class="slider" id="readingTimeSlider">
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">Audio</span>
+                    <div class="toggle-switch" id="audioToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-title">Categories</h3>
+                <div class="category-filter" id="categoryFilter">
+                    <div class="category-tag active" data-category="all">All</div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-title">Personal</h3>
+                <div class="setting-item">
+                    <span class="setting-label">Show only favorites</span>
+                    <div class="toggle-switch" id="favoritesOnlyToggle"></div>
+                </div>
+                <button class="add-personal-btn" id="addPersonalBtn">✨ Add Personal Affirmation</button>
+                <button class="view-reflections-btn" id="viewReflectionsBtn">📝 View Reflections</button>
+            </div>
+        </div>
+        
+        <!-- Add Personal Modal -->
+        <div class="modal-overlay" id="addPersonalOverlay">
+            <div class="modal">
+                <h3>Add Personal Affirmation</h3>
+                <textarea id="personalText" placeholder="Enter your personal affirmation..." maxlength="500"></textarea>
+                <select id="personalCategory">
+                    <option value="Personal">Personal</option>
+                    <option value="Abundance & Prosperity">Abundance & Prosperity</option>
+                    <option value="Love & Relationships">Love & Relationships</option>
+                    <option value="Success & Achievement">Success & Achievement</option>
+                    <option value="Peace & Inner Harmony">Peace & Inner Harmony</option>
+                    <option value="Divine Guidance & Protection">Divine Guidance & Protection</option>
+                    <option value="Health & Healing">Health & Healing</option>
+                    <option value="Transformation & Release">Transformation & Release</option>
+                    <option value="Faith & Trust">Faith & Trust</option>
+                </select>
+                <div class="modal-buttons">
+                    <button id="savePersonalBtn">Save</button>
+                    <button id="cancelPersonalBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reflections Modal -->
+        <div class="modal-overlay" id="reflectionsOverlay">
+            <div class="modal reflections-modal">
+                <h3>My Reflections</h3>
+                <div id="reflectionsList"></div>
+                <button id="closeReflectionsBtn">Close</button>
+            </div>
+        </div>
+        
+        <!-- Reflection Input Modal -->
+        <div class="modal-overlay" id="reflectionInputOverlay">
+            <div class="modal">
+                <h3>Reflect on this affirmation</h3>
+                <p id="reflectionAffirmationText"></p>
+                <textarea id="reflectionText" placeholder="How does this speak to you today?" maxlength="300"></textarea>
+                <div class="modal-buttons">
+                    <button id="saveReflectionBtn">Save Reflection</button>
+                    <button id="skipReflectionBtn">Skip</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="floating-elements">
             <div class="floating-element" style="left: 10%; animation-delay: 0s;"></div>
             <div class="floating-element" style="left: 30%; animation-delay: 8s;"></div>
@@ -290,356 +766,350 @@
         </div>
         
         <div class="content-area" id="contentArea">
-            <div class="content-type" id="contentType">AFFIRMATION</div>
-            <div class="category" id="category">Abundance & Supply</div>
+            <button class="favorite-btn" id="favoriteBtn">♡</button>
+            <button class="reflect-btn" id="reflectBtn">💭</button>
+            
+            <div class="content-type">AFFIRMATION</div>
+            <div class="category" id="category">Abundance & Prosperity</div>
             <div class="affirmation" id="content">Infinite spirit, open the way for great abundance, for she's an irresistible magnet for all that belongs to her by divine right.</div>
-            <div class="wisdom" id="wisdomContent" style="display: block;">Faith without nerve is dead.</div>
+            <div class="wisdom" id="wisdomContent">Faith without nerve is dead.</div>
         </div>
         
         <div class="bottom-area">
-            <div class="swipe-hint">↑ Tap for next affirmation</div>
+            <div class="swipe-hint">→ Tap for next affirmation</div>
         </div>
     </div>
 
     <script>
-        // Complete affirmations from your corrected list
         const affirmations = [
-            { category: "Breaking Negative Patterns", text: "I now smash and demolish by my spoken word every untrue record in my subconscious mind. They shall return to the dust heap of their native nothingness, for they came from my own vain imaginings. I now make my perfect records through the Christ within, the records of health, wealth, love, and perfect self-expression. This is the square of life, the game completed." },
-            { category: "Abundance & Supply", text: "Infinite spirit, open the way for great abundance, for she's an irresistible magnet for all that belongs to her by divine right." },
-            { category: "Home & Living", text: "Infinite spirit open the way for the right apartment." },
-            { category: "Achievement", text: "Holding to the vision and giving thanks that the end is accomplished and that I have already received." },
-            { category: "Love & Divine Ideas", text: "I am identified in love with the spirit of everyone connected with this institution. Let the divine idea come out of this situation." },
-            { category: "Overcoming Disappointment", text: "There are not two powers. There is only one power, God. Therefore, there are not disappointments, and this thing means a happy surprise." },
-            { category: "Success from Failure", text: "I baptize this failure success in the name of the Father and of the Son and of the Holy Ghost." },
-            { category: "Seeing Good in Others", text: "As there was only one power, God, this person/situation is here for my good and my prosperity." },
-            { category: "Universal Good", text: "Every man is a golden link in the chain of my good." },
-            { category: "Divine Timing", text: "Divine ideas never conflict; the call will come at the right time." },
-            { category: "Divine Right", text: "I cannot lose any call that belongs to me by divine right. I'm under grace and not under law." },
-            { category: "Acceptance", text: "I agree with my adversary quickly that the adverse situation is good." },
-            { category: "Inner Peace", text: "None of these things move me." },
-            { category: "Present Moment", text: "Live fully in the now." },
-            { category: "Perfect Day", text: "Thy will be done this day. Today is a day of completion. I give thanks for this perfect day. Miracles shall follow miracle, and wonder shall never cease." },
-            { category: "Wonder & Appreciation", text: "I look with wonder at that which is before me." },
-            { category: "Work & Prosperity", text: "I have a wonderful work/business in a wonderful way. I give wonderful service for wonderful pay." },
-            { category: "Divine Selection", text: "Infinite intelligence, give me the right one, equally as charming as this, the one which is mine by divine right." },
-            { category: "Trust & Release", text: "I put the situation in the hands of infinite love and wisdom. If this is the Divine Plan, I bless it and no longer resist. But if it is not divinely planned, I give thanks that it is now dissolved and dissipated." },
-            { category: "Forgiveness", text: "Infinite spirit, I call on the law of forgiveness and give thanks that I am under grace and not under law and cannot lose this which is mine by divine right." },
-            { category: "Releasing Burdens", text: "I cast this burden on the Christ within, and I go free to have plenty to be loving, harmonious, and happy." },
-            { category: "Unity & Love", text: "There is no separation in divine mind; therefore, I cannot be separated from the love and companionship which are mine by divine right." },
-            { category: "Divine Order", text: "Divine order is established in my mind, body, and affairs." },
-            { category: "Seeing Divinity", text: "I salute the divinity in you, I see your divine self only. I see you as God sees you, perfect, made in His image and likeness." },
-            { category: "Divine Protection", text: "Man is a perfect idea in divine mind and is always in his right place. Therefore, my I am is in my right place and I am divinely protected." },
-            { category: "Guidance", text: "Infinite Spirit, reveal to me the way. Let me know if there's anything for me to do." },
-            { category: "Immediate Supply", text: "Infinite spirit, open the way for my immediate supply, that all that is mine by divine right now reach me in great avalanches of abundance. Give me a definite lead, let me know if there's anything for me to do." },
-            { category: "Decision Making", text: "I am always under direct inspiration. I make right decisions quickly." },
-            { category: "Neutralizing False Prophecies", text: "Every false prophecy shall come to naught. Every plan my father in heaven has not planned shall be dissolved and dissipated. The divine idea now comes to pass." },
-            { category: "Universal Will", text: "I will that the will of God be done." },
-            { category: "Denying Loss", text: "I deny loss. There is no loss in divine mind; therefore, I cannot lose that which belongs to me by divine right." },
-            { category: "Increased Wealth", text: "As the rent has been raised, it means that I'll be that much richer, for God is my supply." },
-            { category: "Perfect Self-Expression", text: "Infinite spirit, open the way for the divine design of my life to manifest, that the genius within me now be released. Let me see clearly the perfect plan." },
-            { category: "Knowledge & Learning", text: "I am one with infinite intelligence. I know everything I should know on this subject." },
-            { category: "Divine Preparation", text: "I am fully equipped for the divine plan of my life and be fearless in grasping opportunities." },
-            { category: "Immediate Manifestation", text: "Declaring that I have already received before asking." },
-            { category: "Specific Abundance", text: "Infinite spirit, I give thanks that the one hundred million dollars which is mine by divine right is now released and reaches me under grace in a perfect way." },
-            { category: "General Prosperity", text: "God is my unfailing supply, and large sums of money come to me quickly under grace in perfect ways." },
-            { category: "Right Conditions", text: "Every plan my father in heaven has not planned shall be dissolved and dissipated and the divine idea now comes to pass." },
-            { category: "Faith", text: "As I am one with God, I am one with my good, for God is both the giver and the gift. I cannot separate the giver from the gift." },
-            { category: "Dissolving Wrong Conditions", text: "Divine love now dissolves and dissipates every wrong condition in my mind, body, and affairs. Divine love is the most powerful chemical in the universe and dissolves everything which is not of itself." },
-            { category: "Health", text: "Divine love floods my consciousness with health, and every cell in my body is filled with light." },
-            { category: "Clear Vision", text: "My eyes are God's eyes. I see with the eyes of spirit. I see clearly the open way. There are no obstacles on my pathway. I see clearly the perfect plan." },
-            { category: "Guidance & Intuition", text: "I am divinely sensitive to my intuitive leads and give instant obedience to thy will." },
-            { category: "Hearing", text: "My ears are God's ears. I hear with the ears of spirit. I'm non-resistant and I'm willing to be led. I hear glad tidings of great joy." },
-            { category: "Right Work", text: "I have a perfect work in a perfect way. I give a perfect service for perfect pay." },
-            { category: "Freedom from Bondage", text: "I cast this burden on the Christ within, and I go free." },
-            { category: "Divine Expression", text: "Let me now express the divine idea in my mind body and affairs." },
-            { category: "General Success", text: "I am strong in the lord and the power of his might. I am backed by unnumbered hosts of power." },
-            { category: "Dissolving Past Mistakes", text: "Evil is unreal and leaves no stain." },
-            { category: "Overcoming Fear of Loss", text: "There is no loss in divine mind therefore I cannot lose this it will be restored to me or its equivalent." },
-            { category: "Right Desires", text: "I only desire that which infinite intelligence desires through me. I claim that which is mine by divine right and under grace is a perfect way." },
-            { category: "Perfect Self-Expression", text: "My right work my perfect self-expression." },
-            { category: "Clear Vision of Divine Plan", text: "Whereas i was blind now i can see clearly and distinctly the divine plan of my life." },
-            { category: "Understanding God's Power", text: "Whereas i was blind now i can see that god's power is the only power and that god's plan is the only plan." },
-            { category: "Eternal Security", text: "God is my eternal security of mind body and affairs." },
-            { category: "Overcoming Worry", text: "Let not your heart be troubled neither be afraid." },
-            { category: "Transmuting Enemies", text: "My goodwill is a strong tower round about me. I now transmute all enemies into friends all in harmony into harmony all injustice into justice." },
-            { category: "Financial Freedom", text: "The walls of lack and delay now crumble away and I enter my promised land under grace." },
-            { category: "Peace & Prosperity", text: "Peace be within my walls and prosperity within my palaces." },
-            { category: "Restoration", text: "I will restore you to the years the locusts have eaten." },
-            { category: "Unlimited Good", text: "Whatever I desire or require is already on my pathway before ye call i have answered." },
-            { category: "Dissolving Negative Thoughts", text: "None of these things move me." },
-            { category: "Overcoming Obstacles", text: "I ride the waves into my promised land." },
-            { category: "Spiritual Sight", text: "Whereas i was blind now i can see." },
-            { category: "Expecting Wonder", text: "I look with wonder at that which is before me." },
-            { category: "Overcoming Anxiety", text: "In nothing be anxious but in everything be prayer and thanksgiving let your requests be made known unto God." },
-            { category: "God as Supply", text: "My supply comes from God and it has never failed." },
-            { category: "Right Decisions", text: "I am always under direct inspiration I make right decisions quickly." },
-            { category: "Freedom from Bondage", text: "All bondage is an illusion of the race consciousness. There is always a way out of every situation, under grace. Every man is free to do the will of God." },
-            { category: "Divine Protection", text: "The Lord is my light and my salvation whom shall I fear the Lord is the strength of my life of whom shall I be afraid." },
-            { category: "Overcoming Criticism", text: "God appreciates me therefore man appreciates me nothing can interfere with my divinely designed success." },
-            { category: "Divine Guidance", text: "Acknowledge me in all your ways and I will make plain your path." },
-            { category: "New Beginnings", text: "Behold I make all things new." },
-            { category: "Peace", text: "Great peace have they that love thy law and nothing shall offend them." },
-            { category: "God's Perfect Plan", text: "The divine plan of my life is a perfect idea in divine mind incorruptible and indestructible and cannot be spoiled in any way." },
-            { category: "Answered Prayers", text: "My prayers are answered/demonstrations come to pass." },
-            { category: "Miracles", text: "I am now back in the world of the wondrous where anything can happen overnight for when miracles do come they come quickly and I invite them in my life." },
-            { category: "God's Ways", text: "God's ways are ingenious his methods are sure." },
-            { category: "Neutralizing Envy", text: "What God has done for others he now does for me and more." },
-            { category: "Entering Promised Land", text: "The walls of lack and delay now crumble away and I enter my promised land under grace." },
-            { category: "Silent Power", text: "Silence is golden." },
-            { category: "Impossible Good", text: "The unexpected happens my seemingly impossible good now comes to pass." },
-            { category: "Attracting Abundance", text: "Feel rich and successful and suddenly you receive a large check or beautiful gift." },
-            { category: "Preparation", text: "My lamps are now filled with the oil of faith and fulfillment." },
-            { category: "Financial Accumulation", text: "I call on the law of accumulation my supply comes from God and now pours in and piles up under grace in perfect ways." },
-            { category: "Magic Purse", text: "My supply comes from God, I have the magic purse of the spirit it can never be depleted as money goes out immediately money comes in it is always crammed jammed with abundance under grace in perfect ways." },
-            { category: "Changed Expectations", text: "I change my expectancies and therefore I change my conditions." },
-            { category: "Direct Supply", text: "My soul wait thou only upon God for my expectation is from him." },
-            { category: "Non-Separation from God", text: "I cannot be separated from God the giver therefore i cannot be separated from God the gift." },
-            { category: "God's Protection", text: "The long arm of God reaches out over people and conditions controlling the situation and protecting my interests." },
-            { category: "Peace & Prosperity", text: "Peace be within thy walls and prosperity within thy palaces." },
-            { category: "Crossing Red Sea", text: "The waters of my red sea part and I pass over on dry land. I now go forward into my promised land." },
-            { category: "Control of Thoughts", text: "Every plant my father in heaven has not planted shall be rooted up." },
-            { category: "Divine Plan of Life", text: "The inspiration of the almighty shall be my defense and i shall have plenty of silver." },
-            { category: "Never Wanting", text: "The Lord is my shepherd i shall never want." },
-            { category: "Harvest Ground", text: "The ground you are on is harvest ground." },
-            { category: "Catching Up with Good", text: "I am wide awake to my good i never miss a trick." },
-            { category: "Released Genius", text: "The genius within me is released i now fulfill my destiny." },
-            { category: "Impossible Situations", text: "Behold I will do a new thing now it shall spring forth shall ye not know it I will even make a way in the wilderness and rivers in the desert." },
-            { category: "Magic Purse of Spirit", text: "I have the magic purse of the Spirit; it can never be depleted; as money goes out, immediately money comes in, under grace in perfect ways. I see it always crammed, jammed with money: bills, checks, gold, silver and currency. I see it bulging with abundance!" },
-            { category: "Lifting Fog", text: "There are no fogs in Divine Mind, so let the fog be lifted! I give thanks for the sun!" },
-            { category: "Open Door of Destiny", text: "Behold I have set before thee the open door of destiny and no man shall shut it! And no man shall shut it for it is nailed back!" },
-            { category: "Divine Action", text: "The decks are now cleared for Divine Action and my own comes to me under grace in a magical way." },
-            { category: "Dissolving Worn-Out", text: "I now let go of worn-out conditions and worn-out things. Divine order is established in my mind, body and affairs. Behold, I make all things new." },
-            { category: "Unexpected Good", text: "My seeming impossible good now comes to pass, the unexpected now happens!" },
-            { category: "Four Winds of Success", text: "The four winds of success now blow to me my own. From North, South, East and West comes my endless good." },
-            { category: "Christ Within", text: "The Christ in me is risen, I now fulfill my destiny." },
-            { category: "Endless Good", text: "Endless good now comes to me in endless ways." },
-            { category: "Victorious Way", text: "I clap my cymbals and rejoice, for Jehovah goes before me making clear, easy and successful my way!" },
-            { category: "Whirlwind Success", text: "I give thanks for my whirlwind success. I sweep all before me for I work with the Spirit and follow the Divine Plan of my life." },
-            { category: "Spiritual Strength", text: "My Spiritual Sporting blood is up! I am more than equal to this situation." },
-            { category: "Abundant Harvest", text: "I am awake to my good, and gather in the harvest of endless opportunities." },
-            { category: "Poise & Magnetism", text: "I am harmonious, poised and magnetic. I now draw to myself my own. My power is God's power and is irresistible!" },
-            { category: "Divine Order & Action", text: "Divine order is now established in my mind, body and affairs. I see clearly and act quickly and my greatest expectations come to pass in a miraculous way." },
-            { category: "No Competition", text: "There is no competition on the Spiritual plane. What is rightfully mine is given me under grace." },
-            { category: "Inner Revelation", text: "I have within me an undiscovered country, which is revealed to me now, in the name of Jesus Christ." },
-            { category: "Turning Tide", text: "The tide of Destiny has turned and everything comes my way." },
-            { category: "Present Living", text: "I banish the past and now live in the wonderful now, where happy surprises come to me each day." },
-            { category: "Open Doors", text: "There are no lost opportunities in Divine Mind, as one door shut another door opened." },
-            { category: "Magical Work", text: "I have a magical work in a magical way, I give magical service for magical pay." },
-            { category: "Released Genius", text: "The genius within me is now released. I now fulfill my destiny." },
-            { category: "Hindrances as Stepping Stones", text: "I make friends with hindrances and every obstacle becomes a stepping-stone. Every-thing in the Universe, visible and invisible, is working to bring to me my own." },
-            { category: "Jericho Walls", text: "I give thanks that the walls of Jericho fall down and all lack, limitation and failure are wiped out of my consciousness in the name of Jesus Christ." },
-            { category: "Royal Road", text: "I am now on the royal road of Success, Happiness and Abundance, all the traffic goes my way." },
-            { category: "Perseverance", text: "I will not weary of well-doing, for when I least expect it I shall reap." },
-            { category: "Victory", text: "Jehovah goes before me and the battle is won! All enemy thoughts are wiped out. I am victorious in the name of Jesus Christ." },
-            { category: "No Obstacles", text: "There are no obstacles in Divine Mind, therefore, there is nothing to obstruct my good. All obstacles now vanish from my pathway. Doors fly open, gates are lifted and I enter the Kingdom of fulfillment, under grace." },
-            { category: "Rhythm & Harmony", text: "Rhythm, harmony and balance are now established in my mind, body and affairs." },
-            { category: "New Divine Activity", text: "New fields of Divine activity now open for me and these fields are white with the harvest." },
-            { category: "God's Will", text: "Man's will is powerless to interfere with God's will. God's will is now done in my mind, body and affairs." },
-            { category: "Permanent Plan", text: "God's plan for me is permanent and cannot be budged. I am true to my heavenly vision." },
-            { category: "Divine Plan Taking Shape", text: "The Divine Plan of my life now takes shape in definite, concrete experiences leading to my heart's desire." },
-            { category: "Universal Substance", text: "I now draw from the Universal Substance, with irresistible power and determination, that which is mine by Divine Right." },
-            { category: "Non-Resistance", text: "I do not resist this situation. I put it in the hands of Infinite Love and Wisdom. Let the Divine idea now come to pass." },
-            { category: "Steady Flow", text: "My good now flows to me in a steady, unbroken, ever-increasing stream of success, happiness and abundance." },
-            { category: "No Lost Opportunities", text: "There are no lost opportunities in the Kingdom. As one door shuts another door opens." },
-            { category: "Fearlessness", text: "There is nothing to fear for there is no power to hurt. I walk up to the lion on my pathway and find an angel in armor, and victory in the name of Jesus Christ." },
-            { category: "Harmony with Law", text: "I am in perfect harmony with the working of the law. I stand aside and let Infinite Intelligence make easy and successful my way." },
-            { category: "Holy Ground", text: "The ground I am on is holy ground; The ground I am on is successful ground." },
-            { category: "Open Channels", text: "New fields of Divine Activity now open for me. Unexpected doors fly open, unexpected channels are free." },
-            { category: "Greater Good", text: "What God has done for others He can do for me and more!" },
-            { category: "God's Channel", text: "I am as necessary to God as He is to me, for I am the channel to bring His plan to pass." },
-            { category: "Not Limiting God", text: "I do not limit God by seeing limitation in myself. With God and myself all things are possible." },
-            { category: "Giving & Receiving", text: "Giving precedes receiving and my gifts to others precede God's gifts to me." },
-            { category: "Golden Links", text: "Every man is a golden link in the chain of my good." },
-            { category: "Poise & Clarity", text: "My poise is built upon a rock. I see clearly and act quickly." },
-            { category: "Success & Victory", text: "God cannot fail, so I cannot fail. The warrior within me has already won." },
-            { category: "Kingdom & Will", text: "Thy Kingdom come in me, Thy will be done in me and my affairs." },
-            { category: "Immediate & Endless Supply", text: "I now draw from the abundance of the spheres my immediate and endless supply. All channels are free! All doors are open!" },
-            { category: "Released Gold-Mine", text: "I now release the gold-mine within me. I am linked with an endless golden stream of prosperity which comes to me under grace in perfect ways." },
-            { category: "Goodness & Mercy", text: "Goodness and mercy shall follow me all the days of my life and I shall dwell in the house of abundance forever." },
-            { category: "Receiving Abundance", text: "My God is a God of plenty and I now receive all that I desire or require, and more." },
-            { category: "Avalanches of Abundance", text: "All that is mine by Divine Right is now released and reaches me in great avalanches of abundance, under grace in miraculous ways." },
-            { category: "Endless Supply", text: "My supply is endless, inexhaustible and immediate and comes to me under grace in perfect ways." },
-            { category: "Free Channels", text: "All channels are free and all doors fly open for my immediate and endless, Divinely Designed supply." },
-            { category: "Ships Coming In", text: "My ships come in over a calm sea, under grace in perfect ways." },
-            { category: "Millions", text: "I give thanks that the millions which are mine by Divine Right, now pour in and pile up under grace in perfect ways." },
-            { category: "Unexpected Abundance", text: "Unexpected doors fly open, unexpected channels are free, and endless avalanches of abundance are poured out upon me, under grace in perfect ways." },
-            { category: "Wise Spending", text: "I spend money under direct inspiration wisely and fearlessly, knowing my supply is endless and immediate." },
-            { category: "Fearless Spending", text: "I am fearless in letting money go out, knowing God is my immediate and endless supply." },
-            { category: "Deluged Happiness", text: "I am now deluged with the happiness that was planned for me in the Beginning. My barns are full, my cup flows over with joy." },
-            { category: "Endless Happiness", text: "My endless good now comes to me in endless ways." },
-            { category: "Lasting Joy", text: "I have a wonderful joy in a wonderful way, and my wonderful joy has come to stay." },
-            { category: "Happy Surprises", text: "Happy surprises come to me each day. I look with wonder at that which is before me." },
-            { category: "Lion as Airedale", text: "I walk boldly up to the lion on my pathway and find it is a friendly airedale." },
-            { category: "Harmonious Detachment", text: "I am harmonious, happy, radiant; detached from the tyranny of fear." },
-            { category: "Permanent Happiness", text: "My happiness is built upon a rock. It is mine now and for all eternity." },
-            { category: "Steady Happiness", text: "My good now flows to me in a steady unbroken, ever-increasing stream of happiness." },
-            { category: "God's Affair", text: "My happiness is God's affair, therefore, no one can interfere." },
-            { category: "Heart's Desire", text: "As I am one with God I am now one with my heart's desire." },
-            { category: "Permanent Good", text: "I give thanks for my permanent happiness, my permanent health, my permanent wealth, my permanent love." },
-            { category: "Magnetism & Calm", text: "I am harmonious, happy and Divinely magnetic, and now draw to me my ships over a calm sea." },
-            { category: "Perfect Ideas", text: "God's ideas for me are perfect and permanent." },
-            { category: "Incorruptible Heart's Desire", text: "My heart's desire is a perfect idea in Divine Mind, incorruptible and indestructible, and now comes to pass, under grace in a magical way." },
-            { category: "Undivided Love", text: "As I am one with God, the Undivided One, I am one with my undivided love and undivided happiness." },
-            { category: "Christ Light", text: "The Light of the Christ within now wipes out all fear, doubt, anger and resentment. God's love pours through me, an irresistible magnetic current. I see only perfection and draw to me my own." },
-            { category: "Divine Love Dissolving", text: "Divine Love, through me, now dissolves all seeming obstacles and makes clear, easy and successful my way." },
-            { category: "Universal Love", text: "I love everyone and everyone loves me. My apparent enemy becomes my friend, a golden link in the chain of my good." },
-            { category: "Peace with World", text: "I am at peace with myself and with the whole world. I love everyone and everyone loves me. The flood gates of my good now open." },
-            { category: "Marriage", text: "I give thanks that the marriage made in heaven is now made manifest upon earth. The twain shall be made one now and for all eternity." },
-            { category: "Forgiveness", text: "I forgive everyone and everyone forgives me. The gates swing open for my good." },
-            { category: "Grace", text: "I call on the law of forgiveness. I am free from mistakes and the consequences of mistakes. I am under grace and not under karmic law." },
-            { category: "Absolute Cleansing", text: "Though my mistakes be as scarlet, I shall be washed whiter than snow." },
-            { category: "Past Negatives", text: "What didn't happen in the Kingdom never happened anywhere." },
-            { category: "Adverse Appearances", text: "Adverse appearances work for my good, for God utilizes every person and every situation to bring to me my heart's desire." },
-            { category: "Springboards", text: "Hindrances are friendly and obstacles spring boards! I now jump into my good!" },
-            { category: "Undivided Good", text: "As I am one with the Undivided One, I am one with my undivided good." },
-            { category: "Divine Right Attraction", text: "As the needle in the compass is true to the north, what is rightfully mine is true to me. I am the North! I am now linked by an invisible, unbreakable magnetic cord with all that belongs to me by Divine Right!" },
-            { category: "Kingdom Fulfillment", text: "Thy Kingdom is come, Thy will is done in me and my affairs." },
-            { category: "Dissolving Wrong Plans", text: "Every plan my Father in heaven has not planned is dissolved and obliterated and the Divine Design of my life now comes to pass." },
-            { category: "Permanent Gifts", text: "What God has given me can never be taken from me for His gifts are for all eternity." },
-            { category: "Rock-Built Faith", text: "My faith is built upon a rock and my heart's desire now comes to pass, under grace in a miraculous way." },
-            { category: "Shining Harvest", text: "I see my good in a golden glow of glory. I see my fields shining white with the harvest." },
-            { category: "Unfailing Supply", text: "God is my unfailing and immediate supply of all good." },
-            { category: "Confidence", text: "I am poised and powerful, my greatest expectations are realized in a miraculous way." },
-            { category: "Blooming Wilderness", text: "I water my wilderness with faith and suddenly it blossoms as the rose." },
-            { category: "Fearless Action", text: "I now exercise my fearless faith in three ways—by thinking, speaking and acting. I am unmoved by appearances, therefore appearances move." },
-            { category: "Steadfastness", text: "I stand steadfast, immovable, giving thanks for my seeming impossible good to come to pass, for I know, with God, it is easy of accomplishment, and His time is now." },
-            { category: "Permanent Plans", text: "God's plans for me are built upon a rock. What was mine in the beginning, is mine now and ever shall be mine." },
-            { category: "God's Invincibility", text: "I know there is nothing to defeat God, therefore, there is nothing to defeat me." },
-            { category: "Patience & Desires", text: "I wait patiently on the Lord, I trust in Him, I fret not myself because of evil doers (for every man is a golden link in the chain of my good) and He now gives to me the desires of my heart!" },
-            { category: "Christ's Fearless Faith", text: "I have now the fearless faith of the Christ within. At my approach barriers vanish and obstacles disappear." },
-            { category: "Banishing Fear", text: "All fear is now banished in the name of Jesus Christ, for I know there is no power to hurt. God is the one and only power." },
-            { category: "Harmony with Intelligence", text: "I am in perfect harmony with the working of the law, for I know that Infinite Intelligence knows nothing of obstacles, time or space. It knows only completion." },
-            { category: "Magic Ways", text: "God works in unexpected and magic ways, His wonders to perform." },
-            { category: "Preparing for Fulfillment", text: "I now prepare for the fulfillment of my heart's desire. I show God I believe His promise will be kept." },
-            { category: "Digging Ditches", text: "I now dig my ditches deep with faith and understanding and my heart's desire comes to pass in a surprising way. My ditches will be filled at the right time, bringing all that I have asked for, and more!" },
-            { category: "Starving Negatives", text: "I now put to flight the army of the aliens (negative thoughts). They feed on fear and starve on faith." },
-            { category: "Unmovable Divine Ideas", text: "God's ideas cannot be moved, therefore, what is mine by Divine Right will always be with me." },
-            { category: "Righteous Desires", text: "I give thanks that I now receive the righteous desires of my heart. Mountains are removed, valleys exalted and every crooked place made straight. I am in the Kingdom of fulfillment." },
-            { category: "Perfect Confidence", text: "I have perfect confidence in God and God has perfect confidence in me." },
-            { category: "Receiving as Asked", text: "God's promises are built upon a rock. As I have asked I must receive." },
-            { category: "Heart's Desire", text: "Let me never wander from my heart's desire." },
-            { category: "Unlimited Possibility", text: "I do not limit the Holy One of Israel, in word, thought or deed. With God all things are easy and possible now." },
-            { category: "Watching God Work", text: "I now stand aside and watch God work. It interests me to see how quickly and easily He brings the desires of my heart to pass." },
-            { category: "Already Answered", text: "Before I called I was answered and I now gather in my harvest in a remarkable way." },
-            { category: "Divine Watchfulness", text: "He who watches over my heart's desire Neither slumbers nor sleeps." },
-            { category: "Impossible Doors", text: "Seeming impossible doors now open, seeming impossible channels are free, in the name of Jesus Christ." },
-            { category: "Permanent Good", text: "My good is a perfect and permanent idea in Divine Mind, and must manifest for there is nothing to prevent." },
-            { category: "Denying Loss", text: "There is no loss in Divine Mind, therefore, I cannot lose anything that is rightfully mine. Infinite Intelligence is never too late! Infinite Intelligence knows the way of recovery. There is no loss in Divine Mind, therefore, I cannot lose anything which belongs to me. It will be restored or I receive its equivalent." },
-            { category: "Denying Debt", text: "I deny debt, there is no debt in Divine Mind, therefore, I owe no man anything. All obligations are now wiped out under grace in a miraculous way. I deny debt, there is no debt in Divine Mind, no man owes me anything, all is squared. I send forth love and forgiveness." },
-            { category: "Sales", text: "I give thanks that this article (or property) is now sold to the right person or persons for the right price, giving perfect satisfaction." },
-            { category: "No Competition", text: "There is no competition on the Spiritual plane. What is mine is given me, under grace. I am identified in love with the Spirit of this person (or persons). God protects my interests and the Divine Idea now comes out of this situation." },
-            { category: "Wisdom & Opportunities", text: "Infinite Spirit, give me wisdom to make the most of my opportunities. Never let me miss a trick." },
-            { category: "Direct Inspiration", text: "I am always under direct inspiration. I know just what to do and give instant obedience to my intuitive leads." },
-            { category: "Angel of Destiny", text: "My angel of destiny goes before me, keeping me in the Way." },
-            { category: "Meekness", text: "All power is given unto me to be meek and lowly of heart. I am willing to come last, therefore, I come first!" },
-            { category: "Divine Will", text: "I now place my personal will upon the altar. Your will, not my will; Your way, not my way; Your time, not my time—and in the twinkling of an eye it is done!" },
-            { category: "Revelation", text: "There are no mysteries in the Kingdom. Whatever I should know will now be revealed to me, under grace." },
-            { category: "Non-Resistant Instrument", text: "I am a perfect non-resistant instrument for God to work through, and His perfect plan for me now comes to pass in a magic way." },
-            { category: "Divine Light Protection", text: "I am surrounded by the White Light of the Christ, through which nothing negative can penetrate. I walk in the Light of the Christ and my fear giants dwindle into nothingness. There is nothing to oppose my good." },
-            { category: "Memory", text: "There is no loss of memory in Divine Mind, therefore, I recollect everything I should remember and I forget all that is not for my good." },
-            { category: "Letting Go", text: "I let go of everything not divinely designed for me, and the perfect plan of my life now comes to pass." },
-            { category: "Permanent Divine Right", text: "What is mine by Divine Right can never be taken from me. God's perfect plan for me is built upon a rock." },
-            { category: "Intuition & Promised Land", text: "I follow the magic path of intuition and find myself in my Promised Land, under grace." },
-            { category: "Divine Pattern", text: "My mind, body and affairs are now molded according to the Divine pattern within." },
-            { category: "God's Plan as Power", text: "God is the only power and that power is within me. There is only one plan, God's plan, and that plan now comes to pass." },
-            { category: "Righteous Desires", text: "I give thanks that I now bring forth from the Universal Substance everything that satisfies all the righteous desires of my heart." },
-            { category: "Divine Design", text: "The divine Design of my life now comes to pass. I now fill the place that I can fill and no one else can fill. I now do the things which I can do and no one else can do." },
-            { category: "Fully Equipped", text: "I am fully equipped for the Divine Plan of my life; I am more than equal to the situation." },
-            { category: "Speeded-Up Plan", text: "All doors now open for happy surprises and the Divine Plan of my life is speeded up under grace." },
-            { category: "Timeless Energy", text: "I deny fatigue, for there is nothing to tire me. I live in the Kingdom of eternal joy and absorbing interests. My body is the body electric, timeless and tireless, birthless and deathless. Time and space are obliterated!" },
-            { category: "Living Now", text: "I live in the wonderful now, birthless and deathless! I am one with The One!" },
-            { category: "Eternal Qualities", text: "Thou in me art: Eternal joy. Eternal youth. Eternal wealth. Eternal health. Eternal love. Eternal life." },
-            { category: "Perfect Spiritual Body", text: "I am a Spiritual Being—my body is perfect, made in His likeness and image. The Light of the Christ now streams through every cell. I give thanks for my radiant health." },
-            { category: "Clear Vision", text: "The Light of the Christ now floods my eyeballs. I have the crystal clear vision of the Spirit. I see clearly and distinctly there are no obstacles on my pathway. I see clearly the fulfillment of my heart's desire." },
-            { category: "X-Ray Vision", text: "I have the X-ray eye of the Spirit. I see through apparent obstacles. I see clearly the miracle come to pass." },
-            { category: "Perfect Sight", text: "I give thanks for my perfect sight. I see God in every face, I see good in every situation." },
-            { category: "Spirit Vision", text: "I have the crystal clear vision of the Spirit. I look up and down and all around, for my good comes from North, South, East and West." },
-            { category: "God's Eyes", text: "My eyes are God's eyes, perfect and flawless. The Light of the Christ floods my eyeballs and streams on my pathway. I see clearly there are no lions on my way, only angels and endless blessings." },
-            { category: "Nourishment", text: "I am nourished by the Spirit within. Every cell in my body is filled with light. I give thanks for radiant health and endless happiness." },
-            { category: "Hearing", text: "My ears are the ears of Spirit. The Light of the Christ now streams through my ears dissolving all hardness or malformation. I hear clearly the voice of intuition and give instant obedience. I hear clearly glad tidings of great joy." },
-            { category: "Dissolving Acid Thoughts", text: "The Light of the Christ now floods my consciousness dissolving all acid thoughts. I love everyone and everyone loves me. I give thanks for my radiant health and happiness." },
-            { category: "Removing False Growths", text: "Every plant my Father in Heaven has not planted shall be rooted up. All false ideas in my consciousness are now obliterated. The Light of the Christ streams through every cell and I give thanks for my radiant health and happiness now and forevermore." },
-            { category: "Perfect Heart", text: "My heart is a perfect idea in Divine Mind and is now in its right place, doing its right work. It is a happy heart, a fearless heart and a loving heart. The Light of the Christ streams through every cell and I give thanks for my radiant health." },
-            { category: "Animals", text: "I deny any appearance of disorder. This dog is a perfect idea in Divine Mind and now expresses God's perfect Idea of a perfect dog. Infinite Intelligence illumines and directs this animal. It is a perfect idea in Divine Mind and is always in its right place." },
-            { category: "Fire Control", text: "Fire is man's friend and is always in its right place doing its right work." },
-            { category: "Rain", text: "There is no drought in Divine Mind. I give thanks for the right amount of rain to nourish these crops or garden. I see clearly this gentle downpour and the manifestation is now." },
-            { category: "Storms", text: "The Christ within now rebukes the winds and the waves and there comes a great calm. I see clearly peace established on land and sea." },
-            { category: "Planned Journeys", text: "I give thanks for the Divinely planned journey under Divinely planned conditions with the Divinely planned supply." },
-            { category: "Opportunities", text: "I will give to thee the land that thou seest." },
-            { category: "Rented Rooms", text: "I give thanks that the room is now rented to the right and perfect man for the right price, giving perfect satisfaction." },
-            { category: "Fulfilling Destiny", text: "I now see clearly the perfect plan of my life. Divine enthusiasm fires me and I now fulfill my destiny." },
-            { category: "No Separation from Good", text: "God is incapable of separation or division; therefore, my good is incapable of separation or division. I am one with my undivided good." },
-            { category: "Release of Divine Right", text: "All that is mine by Divine Right is now released and reaches me in a perfect way under Grace." },
-            { category: "Finished Divine Work", text: "God's work is finished now and must manifest." },
-            { category: "Unlimited Abundance", text: "I serve only faith and my unlimited abundance is made manifest." },
-            { category: "Trusting God", text: "I am undisturbed by appearances. I trust in God—and He now brings to me the desires of my heart." },
-            { category: "Good Overtaking", text: "My good now overtakes me in a surprising way." },
-            { category: "Incorruptible Plan", text: "The Divine Plan of my life cannot be tampered with. It is incorruptible and indestructible. It awaits only my recognition." },
-            { category: "Present Reality", text: "There is no there—there is only here." },
-            { category: "Revealed Blessings", text: "Reveal to me the way, let me see clearly the blessing which Thou hast given me." },
-            { category: "God's Will Today", text: "Let Thy blessed will be done in me this day." },
-            { category: "Intuitive Leads", text: "Hunches are my hounds of Heaven—they lead me in the perfect way." },
-            { category: "Seeking & Finding", text: "All things I seek are now seeking me." },
-            { category: "Divine Activity", text: "Divine Activity is now operating in my mind, body and affairs, whether I see it or not." },
-            { category: "Oneness with Desire", text: "Since I am one with the Only Presence, I am one with my heart's desire." },
-            { category: "Single Eye", text: "I now have the single eye of the Spirit and see only completion." },
-            { category: "Perfect Place", text: "I am a perfect idea in Divine Mind and I am always in my right place doing my right work at the right time for the right pay." },
-            { category: "Inner Columbus", text: "The Columbus in you will see you through." },
-            { category: "Irresistible Magnetism", text: "I am an irresistible magnet for checks, bills and currency—for everything that belongs to me by Divine Right." },
-            { category: "Completion", text: "Thou in me art completion. As I have asked I must receive." },
-            { category: "Increase", text: "The law of God is the law of increase and I give thanks for increase under grace in perfect ways." },
-            { category: "Abundance & Clarity", text: "I dwell in a sea of abundance. I see clearly my inexhaustible supply. I see clearly just what to do." },
-            { category: "World of Wondrous", text: "My World of the Wondrous now swings into manifestation and I enter my Promised Land under grace! Great peace have I who love thy law of nonresistance and nothing shall offend me." },
-            { category: "Inspiration", text: "Thou in me art Inspiration, Revelation and Illumination." },
-            { category: "Unlimited Good", text: "Nothing is too good to be true, Nothing is too wonderful to happen, Nothing is too good to last." }
+            { category: "Abundance & Prosperity", text: "Infinite spirit, open the way for great abundance, for she's an irresistible magnet for all that belongs to her by divine right." },
+            { category: "Peace & Inner Harmony", text: "None of these things move me." },
+            { category: "Success & Achievement", text: "I have a wonderful work in a wonderful way. I give wonderful service for wonderful pay." },
+            { category: "Love & Relationships", text: "Every man is a golden link in the chain of my good." },
+            { category: "Faith & Trust", text: "The unexpected happens, my seemingly impossible good now comes to pass." },
+            { category: "Divine Guidance & Protection", text: "I am always under direct inspiration. I make right decisions quickly." },
+            { category: "Health & Healing", text: "Divine love floods my consciousness with health, and every cell in my body is filled with light." },
+            { category: "Transformation & Release", text: "I cast this burden on the Christ within, and I go free." },
+            { category: "Abundance & Prosperity", text: "God is my unfailing supply, and large sums of money come to me quickly under grace in perfect ways." },
+            { category: "Peace & Inner Harmony", text: "Great peace have they that love thy law and nothing shall offend them." },
+            { category: "Success & Achievement", text: "I am fully equipped for the divine plan of my life and be fearless in grasping opportunities." },
+            { category: "Faith & Trust", text: "As I am one with God, I am one with my good, for God is both the giver and the gift." },
+            { category: "Love & Relationships", text: "I salute the divinity in you, I see your divine self only. I see you as God sees you, perfect, made in His image and likeness." },
+            { category: "Divine Guidance & Protection", text: "Divine order is established in my mind, body, and affairs." },
+            { category: "Health & Healing", text: "My eyes are God's eyes. I see with the eyes of spirit. I see clearly the open way." },
+            { category: "Transformation & Release", text: "All bondage is an illusion of the race consciousness. There is always a way out of every situation, under grace." }
         ];
 
-        // Words of wisdom
         const wisdomQuotes = [
             "Faith without nerve is dead.",
-            "There is never a slip 'twixt the right cup and the right lip.",
-            "Never look or you'd never leap.",
-            "God works in unexpected places, through unexpected people, at unexpected times, His wonders to perform.",
-            "Power moves but is never moved.",
-            "Loving your neighbor means not to limit your neighbor in word, thought or deed.",
             "Never argue with a hunch.",
-            "Christopher Columbus followed a hunch.",
-            "The Kingdom of Heaven is the realm of perfect ideas.",
-            "It is dark before the dawn but the dawn never fails. Trust in the dawn.",
-            "When in doubt play trumps, do the fearless thing.",
-            "It is the fearless things that count.",
-            "Never do today what intuition says to do tomorrow.",
             "It's a great life if you don't reason.",
-            "Regard your neighbor as yourself.",
-            "Never hinder another's hunch.",
-            "Selfishness binds and blocks. Every loving and unselfish thought has in it the germ of success.",
-            "Be not weary of make-believing. When you least expect it you shall reap.",
-            "Faith is elastic. Stretch it to the end of your demonstration.",
-            "Before you call you are answered, for the supply precedes the demand.",
-            "What you do for others you are doing for yourself.",
-            "Every act committed while angry or resentful brings unhappy reaction.",
-            "Sorrow and disappointment follow in the wake of deceit and subterfuge. The way of the transgressor is hard. No good thing will be withheld from him who walks uprightly.",
-            "There is no power in evil. It is nothing; therefore can only come to nothing.",
-            "Fear and impatience demagnetize. Poise magnetizes.",
-            "Drown the reasoning mind with your affirmation. Jehoshaphat clapped his cymbals so that he wouldn't hear himself think.",
-            "All bondage is an illusion of the race consciousness. There is always a way out of every situation, under grace. Every man is free to do the will of God.",
-            "Sure-ism is stronger than Optimism.",
+            "Power moves but is never moved.",
             "Divine ideas never conflict.",
-            "It is dangerous to stop in the middle of a hunch. Infinite Spirit is never too late."
+            "Sure-ism is stronger than Optimism.",
+            "Christopher Columbus followed a hunch.",
+            "When in doubt play trumps, do the fearless thing.",
+            "Before you call you are answered, for the supply precedes the demand.",
+            "Fear and impatience demagnetize. Poise magnetizes."
         ];
 
-        // Background themes
         const backgrounds = ['bg-peaceful', 'bg-calm', 'bg-tranquil', 'bg-gentle'];
         
-        // App state
         let wisdomIndex = 0;
-        let affirmationTime = 5 * 60;
-        let wisdomTime = 60 * 60;
         let bgIndex = 0;
+        let currentAffirmation = null;
+        let filteredAffirmations = affirmations;
+        let personalAffirmations = [];
+        let readingHistory = [];
+        
+        let settings = {
+            nightMode: false,
+            audioEnabled: false,
+            readingTime: 5,
+            selectedCategory: 'all',
+            favoritesOnly: false
+        };
+        
+        // Load data
+        function loadSettings() {
+            const saved = localStorage.getItem('serenitySettings');
+            if (saved) settings = { ...settings, ...JSON.parse(saved) };
+            
+            const savedPersonal = localStorage.getItem('serenityPersonalAffirmations');
+            if (savedPersonal) personalAffirmations = JSON.parse(savedPersonal);
+            
+            const savedHistory = localStorage.getItem('serenityReadingHistory');
+            if (savedHistory) readingHistory = JSON.parse(savedHistory);
+            
+            applySettings();
+        }
+        
+        function saveSettings() {
+            localStorage.setItem('serenitySettings', JSON.stringify(settings));
+        }
+        
+        function savePersonalAffirmations() {
+            localStorage.setItem('serenityPersonalAffirmations', JSON.stringify(personalAffirmations));
+        }
+        
+        function saveReadingHistory() {
+            localStorage.setItem('serenityReadingHistory', JSON.stringify(readingHistory));
+        }
+        
+        // History tracking
+        function addToHistory(affirmation) {
+            readingHistory.unshift({ text: affirmation.text, timestamp: Date.now() });
+            if (readingHistory.length > 20) readingHistory = readingHistory.slice(0, 20);
+            saveReadingHistory();
+        }
+        
+        function wasRecentlyShown(affirmation) {
+            const recent = readingHistory.slice(0, 5);
+            return recent.some(item => item.text === affirmation.text);
+        }
+        
+        // Apply settings
+        function applySettings() {
+            document.body.classList.toggle('night-mode', settings.nightMode);
+            document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
+            document.getElementById('readingTimeSlider').value = settings.readingTime;
+            document.getElementById('audioToggle').classList.toggle('active', settings.audioEnabled);
+            document.getElementById('favoritesOnlyToggle').classList.toggle('active', settings.favoritesOnly);
+            updateFilteredAffirmations();
+        }
+        
+        // Favorites
+        function getFavorites() {
+            const saved = localStorage.getItem('serenityFavorites');
+            return saved ? JSON.parse(saved) : [];
+        }
+        
+        function saveFavorites(favorites) {
+            localStorage.setItem('serenityFavorites', JSON.stringify(favorites));
+        }
+        
+        function toggleFavorite() {
+            if (!currentAffirmation) return;
+            const favorites = getFavorites();
+            const index = favorites.indexOf(currentAffirmation.text);
+            
+            if (index === -1) {
+                favorites.push(currentAffirmation.text);
+            } else {
+                favorites.splice(index, 1);
+            }
+            
+            saveFavorites(favorites);
+            updateFavoriteButton();
+        }
+        
+        function updateFavoriteButton() {
+            if (!currentAffirmation) return;
+            const favorites = getFavorites();
+            const isFavorited = favorites.includes(currentAffirmation.text);
+            const btn = document.getElementById('favoriteBtn');
+            btn.textContent = isFavorited ? '♥' : '♡';
+            btn.classList.toggle('favorited', isFavorited);
+        }
+        
+        // Categories
+        function getCategories() {
+            const original = [...new Set(affirmations.map(a => a.category))].sort();
+            const personal = [...new Set(personalAffirmations.map(a => a.category))].sort();
+            return [...new Set([...original, ...personal])].sort();
+        }
+        
+        function updateFilteredAffirmations() {
+            let all = [...affirmations, ...personalAffirmations];
+            let filtered = all;
+            
+            if (settings.selectedCategory !== 'all') {
+                filtered = filtered.filter(a => a.category === settings.selectedCategory);
+            }
+            
+            if (settings.favoritesOnly) {
+                const favorites = getFavorites();
+                filtered = filtered.filter(a => favorites.includes(a.text));
+            }
+            
+            filteredAffirmations = filtered.length > 0 ? filtered : all;
+        }
+        
+        function setupCategoryFilter() {
+            const container = document.getElementById('categoryFilter');
+            const categories = getCategories();
+            
+            const allTag = container.querySelector('[data-category="all"]');
+            container.innerHTML = '';
+            container.appendChild(allTag);
+            
+            categories.forEach(category => {
+                const tag = document.createElement('div');
+                tag.className = 'category-tag';
+                tag.dataset.category = category;
+                tag.textContent = category;
+                tag.addEventListener('click', () => selectCategory(category));
+                container.appendChild(tag);
+            });
+            
+            updateCategoryFilter();
+        }
+        
+        function selectCategory(category) {
+            settings.selectedCategory = category;
+            saveSettings();
+            updateCategoryFilter();
+            updateFilteredAffirmations();
+            displayAffirmation();
+        }
+        
+        function updateCategoryFilter() {
+            const tags = document.querySelectorAll('.category-tag');
+            tags.forEach(tag => {
+                tag.classList.toggle('active', tag.dataset.category === settings.selectedCategory);
+            });
+        }
+        
+        // Settings panel
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            const isOpen = panel.classList.contains('open');
+            panel.classList.toggle('open', !isOpen);
+            overlay.classList.toggle('open', !isOpen);
+        }
+        
+        // Personal affirmations
+        function openAddPersonalModal() {
+            document.getElementById('addPersonalOverlay').classList.add('open');
+            document.getElementById('personalText').focus();
+        }
+        
+        function closeAddPersonalModal() {
+            document.getElementById('addPersonalOverlay').classList.remove('open');
+            document.getElementById('personalText').value = '';
+            document.getElementById('personalCategory').value = 'Personal';
+        }
+        
+        function savePersonalAffirmation() {
+            const text = document.getElementById('personalText').value.trim();
+            const category = document.getElementById('personalCategory').value;
+            
+            if (!text) {
+                alert('Please enter an affirmation text');
+                return;
+            }
+            
+            personalAffirmations.push({
+                text: text,
+                category: category,
+                isPersonal: true,
+                dateAdded: new Date().toISOString()
+            });
+            
+            savePersonalAffirmations();
+            updateFilteredAffirmations();
+            setupCategoryFilter();
+            closeAddPersonalModal();
+        }
+        
+        // Reflections
+        function openReflectionModal() {
+            if (!currentAffirmation) return;
+            document.getElementById('reflectionAffirmationText').textContent = currentAffirmation.text;
+            document.getElementById('reflectionInputOverlay').classList.add('open');
+            document.getElementById('reflectionText').focus();
+        }
+        
+        function closeReflectionInputModal() {
+            document.getElementById('reflectionInputOverlay').classList.remove('open');
+            document.getElementById('reflectionText').value = '';
+        }
+        
+        function saveReflection() {
+            const reflectionText = document.getElementById('reflectionText').value.trim();
+            
+            if (!reflectionText) {
+                closeReflectionInputModal();
+                return;
+            }
+            
+            const reflection = {
+                affirmation: currentAffirmation.text,
+                category: currentAffirmation.category,
+                reflection: reflectionText,
+                date: new Date().toISOString(),
+                isPersonal: currentAffirmation.isPersonal || false
+            };
+            
+            const reflections = getReflections();
+            reflections.unshift(reflection);
+            
+            if (reflections.length > 50) {
+                reflections.splice(50);
+            }
+            
+            localStorage.setItem('serenityReflections', JSON.stringify(reflections));
+            closeReflectionInputModal();
+        }
+        
+        function getReflections() {
+            const saved = localStorage.getItem('serenityReflections');
+            return saved ? JSON.parse(saved) : [];
+        }
+        
+        function openReflectionsModal() {
+            const reflections = getReflections();
+            const listContainer = document.getElementById('reflectionsList');
+            
+            if (reflections.length === 0) {
+                listContainer.innerHTML = '<p style="text-align: center; color: #6B8FA3; padding: 20px;">No reflections yet. Start by clicking the 💭 button!</p>';
+            } else {
+                listContainer.innerHTML = reflections.map(reflection => {
+                    const date = new Date(reflection.date).toLocaleDateString();
+                    const personalIndicator = reflection.isPersonal ? ' ✨' : '';
+                    return `
+                        <div class="reflection-item">
+                            <div class="reflection-date">${date}</div>
+                            <div class="reflection-affirmation">"${reflection.affirmation.length > 80 ? reflection.affirmation.substring(0, 80) + '...' : reflection.affirmation}"${personalIndicator}</div>
+                            <div class="reflection-note">${reflection.reflection}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            document.getElementById('reflectionsOverlay').classList.add('open');
+        }
+        
+        function closeReflectionsModal() {
+            document.getElementById('reflectionsOverlay').classList.remove('open');
+        }
+        
+        // Audio
+        function speakAffirmation(text) {
+            if (!settings.audioEnabled || !window.speechSynthesis) return;
+            
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            utterance.volume = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
 
-        // Utility functions
+        // Core functions
         function getRandomAffirmation() {
-            return affirmations[Math.floor(Math.random() * affirmations.length)];
+            if (filteredAffirmations.length === 0) return affirmations[0];
+            
+            let attempts = 0;
+            let affirmation;
+            
+            do {
+                affirmation = filteredAffirmations[Math.floor(Math.random() * filteredAffirmations.length)];
+                attempts++;
+            } while (wasRecentlyShown(affirmation) && attempts < 5);
+            
+            return affirmation;
         }
 
         function getNextWisdom() {
@@ -649,6 +1119,7 @@
         }
 
         function changeBackground() {
+            if (settings.nightMode) return;
             backgrounds.forEach(bg => document.body.classList.remove(bg));
             document.body.classList.add(backgrounds[bgIndex]);
             bgIndex = (bgIndex + 1) % backgrounds.length;
@@ -656,6 +1127,7 @@
 
         function displayAffirmation() {
             const affirmation = getRandomAffirmation();
+            currentAffirmation = affirmation;
             const contentArea = document.getElementById('contentArea');
             const category = document.getElementById('category');
             const content = document.getElementById('content');
@@ -664,9 +1136,16 @@
             changeBackground();
             
             setTimeout(() => {
-                category.textContent = affirmation.category;
+                const categoryText = affirmation.isPersonal ? 
+                    affirmation.category + ' ✨' : affirmation.category;
+                
+                category.textContent = categoryText;
                 content.textContent = affirmation.text;
+                updateFavoriteButton();
                 contentArea.classList.remove('updating');
+                
+                addToHistory(affirmation);
+                speakAffirmation(affirmation.text);
             }, 300);
         }
 
@@ -678,23 +1157,7 @@
             
             setTimeout(() => {
                 wisdomContent.style.display = 'none';
-            }, 30000);
-        }
-
-        function updateTimers() {
-            if (affirmationTime > 0) {
-                affirmationTime--;
-            } else {
-                affirmationTime = 5 * 60;
-                displayAffirmation();
-            }
-            
-            if (wisdomTime > 0) {
-                wisdomTime--;
-            } else {
-                wisdomTime = 60 * 60;
-                showWisdom();
-            }
+            }, 15000);
         }
 
         // Touch handling
@@ -716,8 +1179,7 @@
             
             contentArea.addEventListener('touchend', (e) => {
                 if (isScrolling) return;
-                const diff = touchStartY - e.changedTouches[0].clientY;
-                if (diff > 30) displayAffirmation();
+                displayAffirmation();
             }, { passive: true });
 
             contentArea.addEventListener('click', () => {
@@ -725,11 +1187,78 @@
             });
         }
 
+        // Event listeners
+        function setupEventListeners() {
+            // Settings
+            document.getElementById('settingsBtn').addEventListener('click', toggleSettings);
+            document.getElementById('settingsOverlay').addEventListener('click', toggleSettings);
+            
+            // Main buttons
+            document.getElementById('favoriteBtn').addEventListener('click', toggleFavorite);
+            document.getElementById('reflectBtn').addEventListener('click', openReflectionModal);
+            
+            // Settings toggles
+            document.getElementById('nightModeToggle').addEventListener('click', () => {
+                settings.nightMode = !settings.nightMode;
+                saveSettings();
+                applySettings();
+            });
+            
+            document.getElementById('audioToggle').addEventListener('click', () => {
+                settings.audioEnabled = !settings.audioEnabled;
+                saveSettings();
+                applySettings();
+            });
+            
+            document.getElementById('readingTimeSlider').addEventListener('input', (e) => {
+                settings.readingTime = parseInt(e.target.value);
+                saveSettings();
+            });
+            
+            document.getElementById('favoritesOnlyToggle').addEventListener('click', () => {
+                settings.favoritesOnly = !settings.favoritesOnly;
+                saveSettings();
+                applySettings();
+                displayAffirmation();
+            });
+            
+            // Personal affirmations
+            document.getElementById('addPersonalBtn').addEventListener('click', openAddPersonalModal);
+            document.getElementById('savePersonalBtn').addEventListener('click', savePersonalAffirmation);
+            document.getElementById('cancelPersonalBtn').addEventListener('click', closeAddPersonalModal);
+            document.getElementById('addPersonalOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeAddPersonalModal();
+            });
+            
+            // Reflections
+            document.getElementById('viewReflectionsBtn').addEventListener('click', openReflectionsModal);
+            document.getElementById('closeReflectionsBtn').addEventListener('click', closeReflectionsModal);
+            document.getElementById('reflectionsOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeReflectionsModal();
+            });
+            
+            document.getElementById('saveReflectionBtn').addEventListener('click', saveReflection);
+            document.getElementById('skipReflectionBtn').addEventListener('click', closeReflectionInputModal);
+            document.getElementById('reflectionInputOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) closeReflectionInputModal();
+            });
+            
+            // Category "All" button
+            document.querySelector('[data-category="all"]').addEventListener('click', () => {
+                selectCategory('all');
+            });
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            setupCategoryFilter();
             displayAffirmation();
             handleTouch();
-            setInterval(updateTimers, 1000);
+            setupEventListeners();
+            
+            // Show wisdom periodically
+            setInterval(showWisdom, 60000); // Every minute for demo
         });
 
         // Prevent context menu
