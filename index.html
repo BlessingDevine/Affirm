@@ -652,14 +652,168 @@
             .container { margin: 8px; }
         }
         
-        @media (min-width: 768px) {
+        /* Tablet responsive (iPad) */
+        @media (min-width: 768px) and (max-width: 1024px) {
             .container {
-                max-width: 420px;
-                margin: 0 auto;
-                border-radius: 30px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-                margin-top: 40px;
-                height: calc(100vh - 80px);
+                max-width: 600px;
+                margin: 20px auto;
+                border-radius: 32px;
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+                width: calc(100% - 40px);
+                height: calc(100% - 40px);
+            }
+            
+            .logo { 
+                font-size: 3.2em; 
+                margin-bottom: 12px;
+            }
+            
+            .subtitle { 
+                font-size: 1.2em; 
+            }
+            
+            .affirmation { 
+                font-size: 1.6em; 
+                line-height: 1.9;
+                padding: 0 20px;
+            }
+            
+            .content-area { 
+                padding: 50px 30px; 
+            }
+            
+            .wisdom {
+                font-size: 1.3em;
+                padding: 25px;
+            }
+            
+            .category {
+                font-size: 0.9em;
+                padding: 10px 20px;
+            }
+            
+            .content-type {
+                font-size: 0.95em;
+                letter-spacing: 6px;
+            }
+            
+            .settings-panel {
+                width: 380px;
+                right: -380px;
+                padding: 100px 30px 80px 30px;
+            }
+            
+            .favorite-btn, .reflect-btn {
+                font-size: 1.8em;
+            }
+            
+            .favorite-btn { right: 30px; top: 30px; }
+            .reflect-btn { right: 85px; top: 30px; }
+            
+            .swipe-hint {
+                font-size: 1em;
+                padding: 15px 25px;
+            }
+        }
+        
+        /* Desktop responsive */
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 800px;
+                margin: 30px auto;
+                border-radius: 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                width: calc(100% - 60px);
+                height: calc(100% - 60px);
+            }
+            
+            .logo { 
+                font-size: 3.8em; 
+                margin-bottom: 15px;
+            }
+            
+            .subtitle { 
+                font-size: 1.4em; 
+            }
+            
+            .affirmation { 
+                font-size: 1.8em; 
+                line-height: 2.0;
+                padding: 0 40px;
+                max-width: 700px;
+                margin: 0 auto 30px;
+            }
+            
+            .content-area { 
+                padding: 60px 50px; 
+            }
+            
+            .wisdom {
+                font-size: 1.4em;
+                padding: 30px;
+                max-width: 650px;
+                margin: 30px auto 0;
+            }
+            
+            .category {
+                font-size: 1em;
+                padding: 12px 24px;
+            }
+            
+            .content-type {
+                font-size: 1em;
+                letter-spacing: 8px;
+            }
+            
+            .settings-panel {
+                width: 420px;
+                right: -420px;
+                padding: 120px 40px 100px 40px;
+            }
+            
+            .favorite-btn, .reflect-btn {
+                font-size: 2em;
+            }
+            
+            .favorite-btn { right: 40px; top: 40px; }
+            .reflect-btn { right: 100px; top: 40px; }
+            
+            .swipe-hint {
+                font-size: 1.1em;
+                padding: 18px 30px;
+            }
+            
+            .modal {
+                max-width: 500px;
+                padding: 40px;
+            }
+            
+            .modal h3 {
+                font-size: 1.4em;
+                margin-bottom: 25px;
+            }
+            
+            .modal textarea {
+                min-height: 120px;
+                font-size: 1.1em;
+                padding: 15px;
+            }
+        }
+        
+        /* Large desktop */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 900px;
+            }
+            
+            .affirmation {
+                font-size: 2em;
+                max-width: 800px;
+            }
+            
+            .wisdom {
+                max-width: 750px;
+                font-size: 1.5em;
             }
         }
         
@@ -818,7 +972,70 @@
             { category: "Love & Relationships", text: "I salute the divinity in you, I see your divine self only. I see you as God sees you, perfect, made in His image and likeness." },
             { category: "Divine Guidance & Protection", text: "Divine order is established in my mind, body, and affairs." },
             { category: "Health & Healing", text: "My eyes are God's eyes. I see with the eyes of spirit. I see clearly the open way." },
-            { category: "Transformation & Release", text: "All bondage is an illusion of the race consciousness. There is always a way out of every situation, under grace." }
+            { category: "Transformation & Release", text: "All bondage is an illusion of the race consciousness. There is always a way out of every situation, under grace." },
+            { category: "Abundance & Prosperity", text: "Infinite spirit open the way for the right apartment." },
+            { category: "Success & Achievement", text: "Holding to the vision and giving thanks that the end is accomplished and that I have already received." },
+            { category: "Love & Relationships", text: "I am identified in love with the spirit of everyone connected with this institution. Let the divine idea come out of this situation." },
+            { category: "Peace & Inner Harmony", text: "There are not two powers. There is only one power, God. Therefore, there are not disappointments, and this thing means a happy surprise." },
+            { category: "Transformation & Release", text: "I baptize this failure success in the name of the Father and of the Son and of the Holy Ghost." },
+            { category: "Love & Relationships", text: "As there was only one power, God, this person/situation is here for my good and my prosperity." },
+            { category: "Divine Guidance & Protection", text: "Divine ideas never conflict; the call will come at the right time." },
+            { category: "Divine Guidance & Protection", text: "I cannot lose any call that belongs to me by divine right. I'm under grace and not under law." },
+            { category: "Peace & Inner Harmony", text: "I agree with my adversary quickly that the adverse situation is good." },
+            { category: "Peace & Inner Harmony", text: "Live fully in the now." },
+            { category: "Faith & Trust", text: "Thy will be done this day. Today is a day of completion. I give thanks for this perfect day. Miracles shall follow miracle, and wonder shall never cease." },
+            { category: "Peace & Inner Harmony", text: "I look with wonder at that which is before me." },
+            { category: "Divine Guidance & Protection", text: "Infinite intelligence, give me the right one, equally as charming as this, the one which is mine by divine right." },
+            { category: "Faith & Trust", text: "I put the situation in the hands of infinite love and wisdom. If this is the Divine Plan, I bless it and no longer resist. But if it is not divinely planned, I give thanks that it is now dissolved and dissipated." },
+            { category: "Transformation & Release", text: "Infinite spirit, I call on the law of forgiveness and give thanks that I am under grace and not under law and cannot lose this which is mine by divine right." },
+            { category: "Transformation & Release", text: "I cast this burden on the Christ within, and I go free to have plenty to be loving, harmonious, and happy." },
+            { category: "Love & Relationships", text: "There is no separation in divine mind; therefore, I cannot be separated from the love and companionship which are mine by divine right." },
+            { category: "Divine Guidance & Protection", text: "Man is a perfect idea in divine mind and is always in his right place. Therefore, my I am is in my right place and I am divinely protected." },
+            { category: "Divine Guidance & Protection", text: "Infinite Spirit, reveal to me the way. Let me know if there's anything for me to do." },
+            { category: "Abundance & Prosperity", text: "Infinite spirit, open the way for my immediate supply, that all that is mine by divine right now reach me in great avalanches of abundance. Give me a definite lead, let me know if there's anything for me to do." },
+            { category: "Faith & Trust", text: "Every false prophecy shall come to naught. Every plan my father in heaven has not planned shall be dissolved and dissipated. The divine idea now comes to pass." },
+            { category: "Faith & Trust", text: "I will that the will of God be done." },
+            { category: "Divine Guidance & Protection", text: "I deny loss. There is no loss in divine mind; therefore, I cannot lose that which belongs to me by divine right." },
+            { category: "Abundance & Prosperity", text: "As the rent has been raised, it means that I'll be that much richer, for God is my supply." },
+            { category: "Success & Achievement", text: "Infinite spirit, open the way for the divine design of my life to manifest, that the genius within me now be released. Let me see clearly the perfect plan." },
+            { category: "Success & Achievement", text: "I am one with infinite intelligence. I know everything I should know on this subject." },
+            { category: "Faith & Trust", text: "Declaring that I have already received before asking." },
+            { category: "Abundance & Prosperity", text: "Infinite spirit, I give thanks that the one hundred million dollars which is mine by divine right is now released and reaches me under grace in a perfect way." },
+            { category: "Faith & Trust", text: "Every plan my father in heaven has not planned shall be dissolved and dissipated and the divine idea now comes to pass." },
+            { category: "Health & Healing", text: "Divine love now dissolves and dissipates every wrong condition in my mind, body, and affairs. Divine love is the most powerful chemical in the universe and dissolves everything which is not of itself." },
+            { category: "Divine Guidance & Protection", text: "I am divinely sensitive to my intuitive leads and give instant obedience to thy will." },
+            { category: "Health & Healing", text: "My ears are God's ears. I hear with the ears of spirit. I'm non-resistant and I'm willing to be led. I hear glad tidings of great joy." },
+            { category: "Success & Achievement", text: "I have a perfect work in a perfect way. I give a perfect service for perfect pay." },
+            { category: "Success & Achievement", text: "Let me now express the divine idea in my mind body and affairs." },
+            { category: "Success & Achievement", text: "I am strong in the lord and the power of his might. I am backed by unnumbered hosts of power." },
+            { category: "Transformation & Release", text: "Evil is unreal and leaves no stain." },
+            { category: "Divine Guidance & Protection", text: "There is no loss in divine mind therefore I cannot lose this it will be restored to me or its equivalent." },
+            { category: "Faith & Trust", text: "I only desire that which infinite intelligence desires through me. I claim that which is mine by divine right and under grace is a perfect way." },
+            { category: "Success & Achievement", text: "My right work my perfect self-expression." },
+            { category: "Success & Achievement", text: "Whereas i was blind now i can see clearly and distinctly the divine plan of my life." },
+            { category: "Faith & Trust", text: "Whereas i was blind now i can see that god's power is the only power and that god's plan is the only plan." },
+            { category: "Divine Guidance & Protection", text: "God is my eternal security of mind body and affairs." },
+            { category: "Peace & Inner Harmony", text: "Let not your heart be troubled neither be afraid." },
+            { category: "Love & Relationships", text: "My goodwill is a strong tower round about me. I now transmute all enemies into friends all in harmony into harmony all injustice into justice." },
+            { category: "Abundance & Prosperity", text: "The walls of lack and delay now crumble away and I enter my promised land under grace." },
+            { category: "Abundance & Prosperity", text: "Peace be within my walls and prosperity within my palaces." },
+            { category: "Transformation & Release", text: "I will restore you to the years the locusts have eaten." },
+            { category: "Abundance & Prosperity", text: "Whatever I desire or require is already on my pathway before ye call i have answered." },
+            { category: "Success & Achievement", text: "I ride the waves into my promised land." },
+            { category: "Health & Healing", text: "Whereas i was blind now i can see." },
+            { category: "Peace & Inner Harmony", text: "In nothing be anxious but in everything be prayer and thanksgiving let your requests be made known unto God." },
+            { category: "Abundance & Prosperity", text: "My supply comes from God and it has never failed." },
+            { category: "Transformation & Release", text: "Behold I make all things new." },
+            { category: "Faith & Trust", text: "The divine plan of my life is a perfect idea in divine mind incorruptible and indestructible and cannot be spoiled in any way." },
+            { category: "Faith & Trust", text: "My prayers are answered/demonstrations come to pass." },
+            { category: "Faith & Trust", text: "I am now back in the world of the wondrous where anything can happen overnight for when miracles do come they come quickly and I invite them in my life." },
+            { category: "Faith & Trust", text: "God's ways are ingenious his methods are sure." },
+            { category: "Success & Achievement", text: "What God has done for others he now does for me and more." },
+            { category: "Peace & Inner Harmony", text: "Silence is golden." },
+            { category: "Faith & Trust", text: "The unexpected happens my seemingly impossible good now comes to pass." },
+            { category: "Abundance & Prosperity", text: "Feel rich and successful and suddenly you receive a large check or beautiful gift." },
+            { category: "Faith & Trust", text: "My lamps are now filled with the oil of faith and fulfillment." },
+            { category: "Abundance & Prosperity", text: "I call on the law of accumulation my supply comes from God and now pours in and piles up under grace in perfect ways." }
         ];
 
         const wisdomQuotes = [
