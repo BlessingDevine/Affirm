@@ -1115,7 +1115,9 @@
             nightMode: false,
             audioEnabled: false,
             selectedCategory: 'all',
-            favoritesOnly: false
+            favoritesOnly: false,
+            autoMode: true, // New setting for automatic day/night switching
+            lastManualToggle: null // Track when user last manually changed mode
         };
         
         function changeBackground() {
@@ -1158,7 +1160,60 @@
             bgIndex = 0;
         }
         
-        // Auto-advance functionality
+        // Auto day/night functionality
+        function getSunriseSunset() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            
+            // Approximate sunrise/sunset times for Hidden Hills, California
+            // These are rough estimates that vary by season
+            let sunrise, sunset;
+            
+            if (month >= 6 && month <= 8) {
+                // Summer: longer days
+                sunrise = 6;
+                sunset = 20;
+            } else if (month >= 12 || month <= 2) {
+                // Winter: shorter days
+                sunrise = 7;
+                sunset = 17;
+            } else {
+                // Spring/Fall
+                sunrise = 6.5;
+                sunset = 18.5;
+            }
+            
+            return { sunrise, sunset };
+        }
+        
+        function shouldBeNightMode() {
+            const now = new Date();
+            const currentHour = now.getHours() + now.getMinutes() / 60;
+            const { sunrise, sunset } = getSunriseSunset();
+            
+            return currentHour < sunrise || currentHour >= sunset;
+        }
+        
+        function checkAutoModeSwitch() {
+            if (!settings.autoMode) return;
+            
+            // Don't auto-switch if user manually changed mode recently (within 1 hour)
+            if (settings.lastManualToggle) {
+                const oneHourAgo = Date.now() - (60 * 60 * 1000);
+                if (settings.lastManualToggle > oneHourAgo) {
+                    return;
+                }
+            }
+            
+            const shouldBeNight = shouldBeNightMode();
+            if (settings.nightMode !== shouldBeNight) {
+                console.log('Auto-switching to', shouldBeNight ? 'night' : 'day', 'mode');
+                settings.nightMode = shouldBeNight;
+                saveSettings();
+                applySettingsInternal();
+            }
+        }
         function startAutoAdvance() {
             clearTimeout(autoAdvanceTimer);
             autoAdvanceTimer = setTimeout(() => {
@@ -1502,6 +1557,7 @@
             document.getElementById('nightModeToggle').addEventListener('click', () => {
                 console.log('Night mode toggle clicked! Current state:', settings.nightMode);
                 settings.nightMode = !settings.nightMode;
+                settings.lastManualToggle = Date.now(); // Track manual toggle
                 console.log('New night mode state:', settings.nightMode);
                 saveSettings();
                 
@@ -1570,6 +1626,12 @@
             displayAffirmation();
             handleTouch();
             setupEventListeners();
+            
+            // Check auto mode on startup
+            checkAutoModeSwitch();
+            
+            // Check auto mode every 10 minutes
+            setInterval(checkAutoModeSwitch, 10 * 60 * 1000);
             
             // Start auto-advance timer
             startAutoAdvance();
