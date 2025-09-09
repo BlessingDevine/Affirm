@@ -1121,7 +1121,6 @@
         };
         
         function changeBackground() {
-            console.log('changeBackground called, bgIndex =', bgIndex, 'nightMode =', settings.nightMode);
             // Day mode now uses inline styles to override the default set by resetToDefaultBackground
             const dayBackgrounds = [
                 'linear-gradient(135deg, #F0F8F0 0%, #E8F5E8 40%, #DFF7DF 70%, #F8FFF8 100%)', // bg-peaceful
@@ -1131,10 +1130,8 @@
             ];
             
             const selectedBg = dayBackgrounds[bgIndex % dayBackgrounds.length];
-            console.log('Setting day background:', selectedBg);
             document.body.style.background = selectedBg;
             bgIndex = (bgIndex + 1) % dayBackgrounds.length;
-            console.log('changeBackground complete, new bgIndex =', bgIndex);
         }
         
         function applyNightModeBackground() {
@@ -1164,10 +1161,8 @@
         function getSunriseSunset() {
             const now = new Date();
             const month = now.getMonth() + 1;
-            const day = now.getDate();
             
             // Approximate sunrise/sunset times for Hidden Hills, California
-            // These are rough estimates that vary by season
             let sunrise, sunset;
             
             if (month >= 6 && month <= 8) {
@@ -1208,17 +1203,17 @@
             
             const shouldBeNight = shouldBeNightMode();
             if (settings.nightMode !== shouldBeNight) {
-                console.log('Auto-switching to', shouldBeNight ? 'night' : 'day', 'mode');
                 settings.nightMode = shouldBeNight;
                 saveSettings();
-                applySettingsInternal();
+                applySettings();
             }
         }
+        
         function startAutoAdvance() {
             clearTimeout(autoAdvanceTimer);
             autoAdvanceTimer = setTimeout(() => {
                 displayAffirmation();
-            }, 120000); // 2 minutes = 120,000 milliseconds
+            }, 120000); // 2 minutes
         }
         
         function resetAutoAdvance() {
@@ -1432,7 +1427,7 @@
 
         // Core functions
         function getRandomAffirmation() {
-            return affirmations[Math.floor(Math.random() * affirmations.length)];
+            return filteredAffirmations[Math.floor(Math.random() * filteredAffirmations.length)];
         }
 
         function getNextWisdom() {
@@ -1441,15 +1436,7 @@
             return wisdom;
         }
 
-        function changeBackground() {
-            backgrounds.forEach(bg => document.body.classList.remove(bg));
-            document.body.classList.add(backgrounds[bgIndex]);
-            bgIndex = (bgIndex + 1) % backgrounds.length;
-        }
-
         function displayAffirmation() {
-            console.log('displayAffirmation called, settings.nightMode =', settings.nightMode);
-            
             const affirmation = getRandomAffirmation();
             currentAffirmation = affirmation;
             const category = document.getElementById('category');
@@ -1458,26 +1445,11 @@
             // Fade out
             content.classList.add('updating');
             
-            // Change background based on mode (original logic)
+            // Change background based on mode
             if (settings.nightMode) {
-                console.log('displayAffirmation: calling applyNightModeBackground');
                 applyNightModeBackground();
             } else {
-                console.log('displayAffirmation: calling changeBackground, bgIndex =', bgIndex);
-                
-                // Call changeBackground inline to test
-                const dayBackgrounds = [
-                    'linear-gradient(135deg, #F0F8F0 0%, #E8F5E8 40%, #DFF7DF 70%, #F8FFF8 100%)', // bg-peaceful
-                    'linear-gradient(135deg, #F8F5F8 0%, #F0E8F0 40%, #F2DFF2 70%, #FFF8FF 100%)', // bg-calm  
-                    'linear-gradient(135deg, #F8F8F0 0%, #F5F5E8 40%, #F7F7DF 70%, #FFFFF8 100%)', // bg-tranquil
-                    'linear-gradient(135deg, #F0F5F8 0%, #E8F0F5 40%, #DFF2F7 70%, #F8FDFF 100%)'  // bg-gentle
-                ];
-                
-                const selectedBg = dayBackgrounds[bgIndex % dayBackgrounds.length];
-                console.log('displayAffirmation: setting day background:', selectedBg);
-                document.body.style.background = selectedBg;
-                bgIndex = (bgIndex + 1) % dayBackgrounds.length;
-                console.log('displayAffirmation: background change complete, new bgIndex =', bgIndex);
+                changeBackground();
             }
             
             setTimeout(() => {
@@ -1555,46 +1527,51 @@
             
             // Settings toggles
             document.getElementById('nightModeToggle').addEventListener('click', () => {
-                console.log('Night mode toggle clicked! Current state:', settings.nightMode);
                 settings.nightMode = !settings.nightMode;
                 settings.lastManualToggle = Date.now(); // Track manual toggle
-                console.log('New night mode state:', settings.nightMode);
                 saveSettings();
                 
-                // Call applySettings directly inline to test
-                console.log('About to call applySettings directly...');
-                try {
-                    const wasNightMode = document.body.classList.contains('night-mode');
-                    console.log('Direct call: wasNightMode =', wasNightMode, 'settings.nightMode =', settings.nightMode);
-                    
-                    document.body.classList.toggle('night-mode', settings.nightMode);
-                    document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
-                    
-                    console.log('After direct toggle: body has night-mode class =', document.body.classList.contains('night-mode'));
-                    
-                    // Handle background change
-                    if (wasNightMode !== settings.nightMode) {
-                        console.log('DIRECT MODE CHANGE DETECTED!');
-                        if (settings.nightMode) {
-                            console.log('Direct call: applyNightModeBackground');
-                            applyNightModeBackground();
-                        } else {
-                            console.log('Direct call: resetToDefaultBackground');
-                            resetToDefaultBackground();
-                            console.log('resetToDefaultBackground complete, bgIndex now =', bgIndex);
-                            // Force an immediate background change to test
-                            setTimeout(() => {
-                                console.log('Forcing immediate changeBackground after mode switch');
-                                changeBackground();
-                                console.log('Forced changeBackground complete, bgIndex now =', bgIndex);
-                            }, 100);
-                        }
-                    }
-                } catch (error) {
-                    console.error('ERROR in direct call:', error);
-                }
+                const wasNightMode = document.body.classList.contains('night-mode');
+                document.body.classList.toggle('night-mode', settings.nightMode);
+                document.getElementById('nightModeToggle').classList.toggle('active', settings.nightMode);
                 
-                console.log('Direct call complete');
+                // Handle background change
+                if (wasNightMode !== settings.nightMode) {
+                    if (settings.nightMode) {
+                        applyNightModeBackground();
+                    } else {
+                        resetToDefaultBackground();
+                        setTimeout(() => {
+                            changeBackground();
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Audio toggle
+            document.getElementById('audioToggle').addEventListener('click', () => {
+                settings.audioEnabled = !settings.audioEnabled;
+                document.getElementById('audioToggle').classList.toggle('active', settings.audioEnabled);
+                saveSettings();
+            });
+            
+            // Favorites only toggle
+            document.getElementById('favoritesOnlyToggle').addEventListener('click', () => {
+                settings.favoritesOnly = !settings.favoritesOnly;
+                document.getElementById('favoritesOnlyToggle').classList.toggle('active', settings.favoritesOnly);
+                updateFilteredAffirmations();
+                saveSettings();
+            });
+            
+            // Category filter
+            document.getElementById('categoryFilter').addEventListener('click', (e) => {
+                if (e.target.classList.contains('category-tag')) {
+                    document.querySelectorAll('.category-tag').forEach(tag => tag.classList.remove('active'));
+                    e.target.classList.add('active');
+                    settings.selectedCategory = e.target.dataset.category;
+                    updateFilteredAffirmations();
+                    saveSettings();
+                }
             });
             
             // Personal affirmations
